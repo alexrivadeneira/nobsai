@@ -1,61 +1,29 @@
 import Link from "next/link";
+import { client } from "@/sanity/lib/client";
 
-const posts = [
-  {
-    slug: "mastering-ai-prompts",
-    title: "Mastering AI Prompts for Real Work",
-    excerpt: "Cut through the noise and learn the prompting techniques that actually move the needle — no PhD required.",
-    date: "Jun 15, 2025",
-    author: "Alex",
-    category: "Prompting",
-    image: "https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=600&q=80",
-  },
-  {
-    slug: "building-ai-workflows",
-    title: "Building Authentic AI Workflows That Stick",
-    excerpt: "Most AI workflows fail because they're built for demos, not daily use. Here's how to build ones that last.",
-    date: "Jun 10, 2025",
-    author: "Alex",
-    category: "Workflows",
-    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&q=80",
-  },
-  {
-    slug: "why-hands-on-ai",
-    title: "Why Hands-On AI Skills Are Making a Comeback",
-    excerpt: "Since 2018, we've watched automation hype come and go. What remains is the value of knowing how to actually use these tools.",
-    date: "Jun 5, 2025",
-    author: "Alex",
-    category: "Opinion",
-    image: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=600&q=80",
-  },
-  {
-    slug: "no-fluff-chatgpt",
-    title: "No-Fluff Guide to ChatGPT for Business",
-    excerpt: "Skip the hype. Here's what ChatGPT is actually good at in a business context and where it will waste your time.",
-    date: "May 28, 2025",
-    author: "Alex",
-    category: "Tools",
-    image: "https://images.unsplash.com/photo-1676299081847-824916de030a?w=600&q=80",
-  },
-  {
-    slug: "create-sops-with-ai",
-    title: "Create SOPs With AI in Half the Time",
-    excerpt: "Standard operating procedures don't have to take forever. Here's a repeatable system using AI to get them done fast.",
-    date: "May 20, 2025",
-    author: "Alex",
-    category: "Productivity",
-    image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=600&q=80",
-  },
-  {
-    slug: "ai-growth-strategy",
-    title: "Why AI Is Central to Any Growth Strategy Now",
-    excerpt: "Companies ignoring AI in their growth strategy are already behind. Here's how to think about it without the buzzwords.",
-    date: "May 12, 2025",
-    author: "Alex",
-    category: "Strategy",
-    image: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=600&q=80",
-  },
-];
+type Post = {
+  slug: string;
+  title: string;
+  excerpt: string;
+  date: string;
+  author: string;
+  category: string;
+  image: string | null;
+};
+
+async function getPosts(): Promise<Post[]> {
+  return client.fetch(
+    `*[_type == "post"] | order(publishedAt desc) {
+      "slug": slug.current,
+      title,
+      excerpt,
+      "date": coalesce(publishedAt, _createdAt),
+      author,
+      category,
+      "image": coverImage.asset->url
+    }`
+  );
+}
 
 const workshops = [
   { month: "Jul", days: "10–11", time: "2:00 PM", location: "NYC", title: "AI for Business Owners", tier: "Premium", price: "$300" },
@@ -65,7 +33,8 @@ const workshops = [
   { month: "Sep", days: "5", time: "6:00 PM", location: "LA", title: "Writing With AI", tier: "Short", price: "$200" },
 ];
 
-export default function Home() {
+export default async function Home() {
+  const posts = await getPosts();
   return (
     <div className="max-w-6xl mx-auto px-6 py-12">
       <h1
@@ -120,17 +89,19 @@ function Hero() {
   );
 }
 
-function PostCard({ post }: { post: (typeof posts)[0] }) {
+function PostCard({ post }: { post: Post }) {
   return (
     <Link href={`/blog/${post.slug}`} className="block group h-full">
       <div className="rounded-lg overflow-hidden border hover:shadow-md transition-shadow h-full flex flex-col" style={{ borderColor: "#d4c9b0", background: "white" }}>
-        <div className="h-44 overflow-hidden flex-shrink-0">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={post.image}
-            alt={post.title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-          />
+        <div className="h-44 overflow-hidden flex-shrink-0" style={{ background: "#e8e0d0" }}>
+          {post.image && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={post.image}
+              alt={post.title}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+          )}
         </div>
         <div className="p-4 flex flex-col flex-1">
           <h2 className="font-bold text-base leading-snug mb-2" style={{ fontFamily: "var(--font-playfair)", color: "#1a1a1a" }}>
@@ -140,7 +111,7 @@ function PostCard({ post }: { post: (typeof posts)[0] }) {
             {post.excerpt}
           </p>
           <div className="flex items-center gap-2 text-xs" style={{ color: "#6b6b6b" }}>
-            <span>{post.date}</span>
+            <span>{new Date(post.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
             <span>|</span>
             <span>Author {post.author}</span>
             <span>|</span>
