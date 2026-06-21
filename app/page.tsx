@@ -152,7 +152,8 @@ function PostCard({ post }: { post: (typeof posts)[0] }) {
   );
 }
 
-function WorkshopSidebar({ workshops }: { workshops: typeof workshops }) {
+type Workshop = { month: string; days: string; time: string; location: string; title: string; tier: string; price: string };
+function WorkshopSidebar({ workshops }: { workshops: Workshop[] }) {
   return (
     <div className="rounded-lg overflow-hidden border" style={{ borderColor: "#d4c9b0", background: "white" }}>
       <div className="px-5 py-4" style={{ background: "#2d4a2d" }}>
