@@ -45,9 +45,27 @@ async function getWorkshops(): Promise<Workshop[]> {
   );
 }
 
+type SiteSettings = {
+  aboutTitle: string | null;
+  aboutBody: string | null;
+  aboutImage: string | null;
+  aboutLinkLabel: string | null;
+};
+
+async function getSiteSettings(): Promise<SiteSettings> {
+  return client.fetch(
+    `*[_type == "siteSettings"][0] {
+      aboutTitle,
+      aboutBody,
+      "aboutImage": aboutImage.asset->url,
+      aboutLinkLabel
+    }`
+  );
+}
+
 
 export default async function Home() {
-  const [posts, workshops] = await Promise.all([getPosts(), getWorkshops()]);
+  const [posts, workshops, settings] = await Promise.all([getPosts(), getWorkshops(), getSiteSettings()]);
   return (
     <div className="max-w-6xl mx-auto px-6 py-12">
       <h1
@@ -70,7 +88,7 @@ export default async function Home() {
         <div className="w-full lg:w-80 flex-shrink-0 space-y-6">
           <WorkshopSidebar workshops={workshops} />
 
-          <AboutSidebar />
+          <AboutSidebar settings={settings} />
         </div>
       </div>
     </div>
@@ -181,30 +199,31 @@ function WorkshopSidebar({ workshops }: { workshops: Workshop[] }) {
   );
 }
 
-function AboutSidebar() {
+function AboutSidebar({ settings }: { settings: SiteSettings | null }) {
+  const title = settings?.aboutTitle ?? "About NoBSAI";
+  const body = settings?.aboutBody ?? "Straight talk on AI for people building real things. No hype, no fluff — just what actually works.";
+  const image = settings?.aboutImage ?? null;
+  const linkLabel = settings?.aboutLinkLabel ?? "Learn More";
+
   return (
     <div className="rounded-lg overflow-hidden border" style={{ borderColor: "#d4c9b0", background: "white" }}>
       <div className="px-5 py-4" style={{ background: "#f5f0e8", borderBottom: "1px solid #d4c9b0" }}>
-        <h2 className="font-bold text-sm uppercase tracking-widest" style={{ color: "#2d4a2d" }}>About NoBSAI</h2>
+        <h2 className="font-bold text-sm uppercase tracking-widest" style={{ color: "#2d4a2d" }}>{title}</h2>
       </div>
       <div className="p-4">
-        <div className="h-28 rounded overflow-hidden mb-3">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&q=80"
-            alt="Team"
-            className="w-full h-full object-cover"
-          />
-        </div>
-        <p className="text-sm leading-relaxed mb-3" style={{ color: "#6b6b6b" }}>
-          Straight talk on AI for people building real things. No hype, no fluff — just what actually works.
-        </p>
+        {image && (
+          <div className="h-36 rounded overflow-hidden mb-3">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={image} alt={title} className="w-full h-full object-cover object-top" />
+          </div>
+        )}
+        <p className="text-sm leading-relaxed mb-3" style={{ color: "#6b6b6b" }}>{body}</p>
         <Link
           href="/about"
           className="inline-block text-xs font-semibold px-4 py-2 rounded border"
           style={{ borderColor: "#2d4a2d", color: "#2d4a2d" }}
         >
-          Learn More
+          {linkLabel}
         </Link>
       </div>
     </div>
