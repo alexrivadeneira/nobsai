@@ -36,39 +36,13 @@ export default function RootLayout({
 
 function Footer() {
   return (
-    <footer style={{ background: "#2d4a2d", color: "#f5f0e8" }} className="mt-16 py-12 px-8">
-      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
+    <footer className="mt-16 py-10 px-8" style={{ background: "#1a1a1a", borderTop: "2px solid #1a1a1a" }}>
+      <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between gap-6">
         <div>
-          <h3 className="font-bold text-sm uppercase tracking-widest mb-3" style={{ color: "#8fb08f" }}>About Us</h3>
-          <p className="text-sm opacity-75">Straight talk on AI for people who don't have time for the BS.</p>
+          <div className="font-black text-lg uppercase tracking-tight text-white mb-1">NoBSAI</div>
+          <div className="text-xs uppercase tracking-widest" style={{ color: "#7ab87a" }}>No Bloat, Straight AI</div>
         </div>
-        <div>
-          <h3 className="font-bold text-sm uppercase tracking-widest mb-3" style={{ color: "#8fb08f" }}>Home</h3>
-          <ul className="space-y-1 text-sm opacity-75">
-            <li><a href="/" className="hover:opacity-100">Blog</a></li>
-            <li><a href="/workshops" className="hover:opacity-100">Workshops</a></li>
-            <li><a href="/templates" className="hover:opacity-100">Templates</a></li>
-          </ul>
-        </div>
-        <div>
-          <h3 className="font-bold text-sm uppercase tracking-widest mb-3" style={{ color: "#8fb08f" }}>About</h3>
-          <ul className="space-y-1 text-sm opacity-75">
-            <li><a href="/about" className="hover:opacity-100">Premise</a></li>
-            <li><a href="/events" className="hover:opacity-100">Events</a></li>
-            <li><a href="/contact" className="hover:opacity-100">Contact</a></li>
-          </ul>
-        </div>
-        <div>
-          <h3 className="font-bold text-sm uppercase tracking-widest mb-3" style={{ color: "#8fb08f" }}>Contact</h3>
-          <ul className="space-y-1 text-sm opacity-75">
-            <li><a href="/contact" className="hover:opacity-100">Contact the team</a></li>
-            <li><a href="/register" className="hover:opacity-100">Register online</a></li>
-          </ul>
-        </div>
-      </div>
-      <div className="max-w-6xl mx-auto mt-8 pt-8 border-t border-white/10 text-xs opacity-50 flex justify-between">
-        <span>© 2025 NoBSAI</span>
-        <span>Built with Next.js</span>
+        <div className="text-xs text-white/40 self-end">© 2025 NoBSAI</div>
       </div>
     </footer>
   );
