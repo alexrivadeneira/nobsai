@@ -20,6 +20,19 @@ export const post = defineType({
       of: [
         { type: "block" },
         { type: "image", options: { hotspot: true } },
+        {
+          type: "object",
+          name: "vimeoEmbed",
+          title: "Vimeo Video",
+          fields: [
+            { name: "vimeoId", title: "Vimeo Video ID", type: "string", description: "The number at the end of the Vimeo URL, e.g. 1203899292" },
+            { name: "caption", title: "Caption (optional)", type: "string" },
+          ],
+          preview: {
+            select: { title: "vimeoId" },
+            prepare: ({ title }: { title?: string }) => ({ title: `Vimeo: ${title ?? ""}` }),
+          },
+        },
       ],
     }),
   ],

@@ -56,6 +56,23 @@ const components: PortableTextComponents = {
     bullet: ({ children }) => <li style={{ marginBottom: "0.5rem", lineHeight: "1.7", color: "#2a2a2a" }}>{children}</li>,
     number: ({ children }) => <li style={{ marginBottom: "0.5rem", lineHeight: "1.7", color: "#2a2a2a" }}>{children}</li>,
   },
+  types: {
+    vimeoEmbed: ({ value }: { value: { vimeoId: string; caption?: string } }) => (
+      <div style={{ margin: "2rem 0" }}>
+        <div style={{ position: "relative", paddingBottom: "56.25%", height: 0, border: "2px solid #1a1a1a", boxShadow: "4px 4px 0 #1a1a1a" }}>
+          <iframe
+            src={`https://player.vimeo.com/video/${value.vimeoId}`}
+            style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
+            allow="autoplay; fullscreen; picture-in-picture"
+            allowFullScreen
+          />
+        </div>
+        {value.caption && (
+          <p style={{ marginTop: "0.5rem", fontSize: "0.875rem", color: "#6b6b6b", fontStyle: "italic" }}>{value.caption}</p>
+        )}
+      </div>
+    ),
+  },
 };
 
 export default async function BlogPost({ params }: Props) {
