@@ -13,10 +13,10 @@ export default function Nav() {
         height: "100%",
         backgroundImage: "url(/priyanka-sethy-OPQlgTBDUuk-unsplash.jpg)",
         backgroundSize: "cover",
-        backgroundPosition: "center top",
-        filter: "blur(2px) saturate(0.7)",
-        maskImage: "linear-gradient(to left, rgba(0,0,0,0.22) 0%, rgba(0,0,0,0.10) 50%, transparent 100%)",
-        WebkitMaskImage: "linear-gradient(to left, rgba(0,0,0,0.22) 0%, rgba(0,0,0,0.10) 50%, transparent 100%)",
+        backgroundPosition: "center 30%",
+        filter: "blur(1px) saturate(0.8)",
+        maskImage: "linear-gradient(to left, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.35) 55%, transparent 100%)",
+        WebkitMaskImage: "linear-gradient(to left, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.35) 55%, transparent 100%)",
         pointerEvents: "none",
       }} />
       <div className="max-w-6xl mx-auto px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2" style={{ position: "relative" }}>
