@@ -42,8 +42,8 @@ export async function POST(req: NextRequest) {
     sameSite: "lax",
   });
   res.cookies.set("nobsai_access", "1", {
-    httpOnly: true,
-    maxAge: 60 * 60 * 24 * 365, // 1 year
+    httpOnly: false,
+    maxAge: 60 * 60 * 24 * 365,
     path: "/",
     sameSite: "lax",
   });
