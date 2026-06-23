@@ -84,7 +84,6 @@ export default function SurveyBar() {
   }
 
   function dismiss() {
-    setCookie("nobsai_survey_done", "1", 365 * 10);
     setShow(false);
   }
 
