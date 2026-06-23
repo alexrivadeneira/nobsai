@@ -35,6 +35,12 @@ export async function POST(req: NextRequest) {
   }
 
   const res = NextResponse.json({ success: true, redirect: redirect ?? "/" });
+  res.cookies.set("nobsai_email", email, {
+    httpOnly: false,
+    maxAge: 60 * 60 * 24 * 365,
+    path: "/",
+    sameSite: "lax",
+  });
   res.cookies.set("nobsai_access", "1", {
     httpOnly: true,
     maxAge: 60 * 60 * 24 * 365, // 1 year

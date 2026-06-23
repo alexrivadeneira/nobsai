@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Fraunces, Inter } from "next/font/google";
 import "./globals.css";
 import Nav from "@/components/Nav";
+import SurveyBar from "@/components/SurveyBar";
 import { Analytics } from "@vercel/analytics/next";
 
 const fraunces = Fraunces({
@@ -32,6 +33,7 @@ export default function RootLayout({
         <Nav />
         <main className="flex-1">{children}</main>
         <Footer />
+        <SurveyBar />
         <Analytics />
       </body>
     </html>

@@ -126,7 +126,7 @@ function Hero({ settings }: { settings: SiteSettings | null }) {
         <div className="text-xs font-black uppercase tracking-widest mb-3" style={{ color: "#7ab87a" }}>
           // {label}
         </div>
-        <h2 className="text-white text-2xl font-black leading-snug mb-2 uppercase tracking-tight">
+        <h2 className="text-white text-2xl leading-snug mb-2" style={{ fontFamily: "var(--font-fraunces)", fontWeight: 700 }}>
           {headline}
         </h2>
         <p className="text-sm" style={{ color: "rgba(255,255,255,0.8)" }}>
@@ -158,7 +158,7 @@ function PostCard({ post }: { post: Post }) {
               // {post.category}
             </div>
           )}
-          <h2 className="font-black text-base leading-snug mb-2 uppercase" style={{ color: "#1a1a1a" }}>
+          <h2 className="text-base leading-snug mb-2" style={{ color: "#1a1a1a", fontFamily: "var(--font-fraunces)", fontWeight: 700 }}>
             {post.title}
           </h2>
           <p className="text-sm mb-3 leading-relaxed flex-1" style={{ color: "#4a4a4a" }}>

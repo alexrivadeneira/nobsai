@@ -118,7 +118,7 @@ export default async function BlogPost({ params }: Props) {
             // {post.category}
           </div>
         )}
-        <h1 className="font-black uppercase leading-tight mb-4" style={{ fontSize: "2.25rem", letterSpacing: "-0.01em", color: "#1a1a1a" }}>
+        <h1 className="leading-tight mb-4" style={{ fontSize: "2.25rem", fontFamily: "var(--font-fraunces)", fontWeight: 700, color: "#1a1a1a" }}>
           {post.title}
         </h1>
         {post.excerpt && (
