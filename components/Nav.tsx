@@ -9,7 +9,7 @@ export default function Nav() {
           <Image src="/logo.png" alt="NoBSAI" width={80} height={80} className="object-contain" />
           <div>
             <div className="text-4xl leading-tight tracking-tight" style={{ fontFamily: "var(--font-fraunces)", fontWeight: 900 }}>
-              <span style={{ color: "#1a1a1a" }}>NoBSA</span><span style={{ color: "#2d4a2d" }}>I</span>
+              <span style={{ color: "#1a1a1a" }}>NoBS</span><span style={{ color: "#2d4a2d" }}>AI</span>
             </div>
             <div className="text-xs tracking-widest uppercase" style={{ color: "#2d4a2d" }}>No Bloat, Straight AI</div>
           </div>
