@@ -8,7 +8,7 @@ export default function Nav() {
         <Link href="/" className="flex items-center gap-3">
           <Image src="/logo.png" alt="NoBSAI" width={80} height={80} className="object-contain" />
           <div>
-            <div className="font-black text-xl leading-tight tracking-tight uppercase" style={{ color: "#1a1a1a" }}>
+            <div className="text-2xl leading-tight tracking-tight" style={{ color: "#1a1a1a", fontFamily: "var(--font-fraunces)", fontWeight: 900 }}>
               NoBSAI
             </div>
             <div className="text-xs tracking-widest uppercase" style={{ color: "#2d4a2d" }}>No Bloat, Straight AI</div>
