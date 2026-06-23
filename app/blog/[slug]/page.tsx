@@ -1,6 +1,8 @@
 import { client } from "@/sanity/lib/client";
 import { PortableText, PortableTextComponents } from "@portabletext/react";
 import { notFound } from "next/navigation";
+import { cookies } from "next/headers";
+import Link from "next/link";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -13,6 +15,7 @@ async function getPost(slug: string) {
       author,
       category,
       "image": coverImage.asset->url,
+      gated,
       body
     }`,
     { slug }
@@ -60,6 +63,34 @@ export default async function BlogPost({ params }: Props) {
   const post = await getPost(slug);
 
   if (!post) notFound();
+
+  const cookieStore = await cookies();
+  const hasAccess = cookieStore.get("nobsai_access")?.value === "1";
+
+  if (post.gated && !hasAccess) {
+    const joinUrl = `/join?redirect=/blog/${slug}&headline=${encodeURIComponent(post.title)}&label=Members+Only`;
+    return (
+      <div className="max-w-2xl mx-auto px-6 py-24 text-center">
+        <div className="inline-block text-xs font-black uppercase tracking-widest px-3 py-1 mb-6" style={{ background: "#2d4a2d", color: "white" }}>
+          // Members Only
+        </div>
+        <h1 className="text-3xl font-black uppercase leading-tight mb-4" style={{ color: "#1a1a1a" }}>
+          {post.title}
+        </h1>
+        {post.excerpt && (
+          <p className="text-base leading-relaxed mb-8" style={{ color: "#4a4a4a" }}>{post.excerpt}</p>
+        )}
+        <Link
+          href={joinUrl}
+          className="inline-block text-sm font-black uppercase px-8 py-4 text-white"
+          style={{ background: "#2d4a2d", border: "2px solid #1a1a1a", boxShadow: "4px 4px 0 #1a1a1a" }}
+        >
+          Get Access — It's Free →
+        </Link>
+        <p className="text-xs mt-4" style={{ color: "#9a9a9a" }}>Just your email. No credit card.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-2xl mx-auto px-6 py-12">
