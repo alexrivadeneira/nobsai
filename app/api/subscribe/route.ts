@@ -7,8 +7,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Valid email required" }, { status: 400 });
   }
 
-  const API_KEY = process.env.MAILCHIMP_API_KEY!;
-  const AUDIENCE_ID = process.env.MAILCHIMP_AUDIENCE_ID!;
+  const API_KEY = process.env.MAILCHIMP_API_KEY;
+  const AUDIENCE_ID = process.env.MAILCHIMP_AUDIENCE_ID;
+
+  if (!API_KEY || !AUDIENCE_ID) {
+    return NextResponse.json({ error: "Email service not configured" }, { status: 503 });
+  }
+
   const datacenter = API_KEY.split("-").pop();
 
   const url = `https://${datacenter}.api.mailchimp.com/3.0/lists/${AUDIENCE_ID}/members`;

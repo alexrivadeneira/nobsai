@@ -13,7 +13,7 @@ const DEFAULTS = {
     "No jargon, no hype, no PhD required",
     "Real examples you can use today",
   ],
-  cta: "Get Instant Access →",
+  cta: "Access immediately →",
   redirect: "/read/how-to-explain-ai",
 };
 
