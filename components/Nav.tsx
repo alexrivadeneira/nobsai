@@ -15,8 +15,8 @@ export default function Nav() {
           </div>
         </Link>
 
-        <p className="text-sm md:text-right max-w-[240px] leading-snug" style={{ color: "#4a4a4a" }}>
-          the East Bay&apos;s home for actionable, no-nonsense AI education.
+        <p className="text-base md:text-right max-w-[240px] leading-snug italic" style={{ color: "#4a4a4a", fontFamily: "var(--font-fraunces)", fontWeight: 400 }}>
+          The East Bay&apos;s home for actionable, no-nonsense AI education.
         </p>
       </div>
     </nav>

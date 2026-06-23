@@ -7,7 +7,8 @@ import { Analytics } from "@vercel/analytics/next";
 const fraunces = Fraunces({
   variable: "--font-fraunces",
   subsets: ["latin"],
-  weight: ["900"],
+  weight: ["400", "900"],
+  style: ["normal", "italic"],
 });
 
 const inter = Inter({
