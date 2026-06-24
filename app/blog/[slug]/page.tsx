@@ -3,6 +3,7 @@ import { PortableText, PortableTextComponents } from "@portabletext/react";
 import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
 import Link from "next/link";
+import CommentSection from "./CommentSection";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -19,6 +20,15 @@ async function getPost(slug: string) {
       body
     }`,
     { slug }
+  );
+}
+
+async function getComments(postSlug: string) {
+  return client.fetch(
+    `*[_type == "comment" && postSlug == $postSlug && approved == true] | order(submittedAt asc) {
+      _id, name, body, submittedAt
+    }`,
+    { postSlug }
   );
 }
 
@@ -83,6 +93,7 @@ export default async function BlogPost({ params }: Props) {
 
   const cookieStore = await cookies();
   const hasAccess = cookieStore.get("nobsai_access")?.value === "1";
+  const comments = await getComments(slug);
 
   if (post.gated && !hasAccess) {
     const joinUrl = `/join?redirect=/blog/${slug}&headline=${encodeURIComponent(post.title)}&label=Members+Only`;
@@ -150,6 +161,8 @@ export default async function BlogPost({ params }: Props) {
           <PortableText value={post.body} components={components} />
         </div>
       )}
+
+      <CommentSection slug={slug} comments={comments} hasAccess={hasAccess} />
 
       {/* Back link */}
       <div className="mt-12 pt-8" style={{ borderTop: "2px solid #1a1a1a" }}>
