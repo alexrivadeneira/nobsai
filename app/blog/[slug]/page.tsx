@@ -50,6 +50,7 @@ const components: PortableTextComponents = {
   marks: {
     strong: ({ children }) => <strong style={{ fontWeight: 900 }}>{children}</strong>,
     em: ({ children }) => <em>{children}</em>,
+    code: ({ children }) => <code style={{ fontFamily: "monospace", fontSize: "0.9em", background: "#e8e4d8", border: "1px solid #c8c4b8", borderRadius: "3px", padding: "0.1em 0.4em" }}>{children}</code>,
     link: ({ value, children }) => (
       <a href={value?.href} style={{ color: "#2d4a2d", textDecoration: "underline", fontWeight: 600 }} target="_blank" rel="noopener noreferrer">{children}</a>
     ),
