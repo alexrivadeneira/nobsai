@@ -91,7 +91,7 @@ export default async function BlogPost({ params }: Props) {
         <div className="inline-block text-xs font-black uppercase tracking-widest px-3 py-1 mb-6" style={{ background: "#2d4a2d", color: "white" }}>
           // Gated content
         </div>
-        <h1 className="text-3xl font-black uppercase leading-tight mb-4" style={{ color: "#1a1a1a" }}>
+        <h1 className="text-3xl leading-tight mb-4" style={{ color: "#1a1a1a", fontFamily: "var(--font-fraunces)", fontWeight: 700 }}>
           {post.title}
         </h1>
         {post.excerpt && (
