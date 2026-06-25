@@ -9,6 +9,7 @@ export const siteSettings = defineType({
     defineField({ name: "aboutBody", title: "About Bio", type: "text", rows: 4 }),
     defineField({ name: "aboutImage", title: "About Photo", type: "image", options: { hotspot: true } }),
     defineField({ name: "aboutLinkLabel", title: "About Link Label", type: "string" }),
+    defineField({ name: "aboutLinkUrl", title: "About Link URL", type: "string" }),
     defineField({ name: "heroLabel", title: "Hero Label (e.g. Announcement)", type: "string" }),
     defineField({ name: "heroHeadline", title: "Hero Headline", type: "string" }),
     defineField({ name: "heroSubtext", title: "Hero Subtext", type: "text", rows: 2 }),

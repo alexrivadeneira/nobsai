@@ -52,6 +52,7 @@ type SiteSettings = {
   aboutBody: string | null;
   aboutImage: string | null;
   aboutLinkLabel: string | null;
+  aboutLinkUrl: string | null;
   heroLabel: string | null;
   heroHeadline: string | null;
   heroSubtext: string | null;
@@ -67,6 +68,7 @@ async function getSiteSettings(): Promise<SiteSettings> {
       aboutBody,
       "aboutImage": aboutImage.asset->url,
       aboutLinkLabel,
+      aboutLinkUrl,
       heroLabel,
       heroHeadline,
       heroSubtext,
@@ -222,7 +224,8 @@ function AboutSidebar({ settings }: { settings: SiteSettings | null }) {
   const title = settings?.aboutTitle ?? "About NoBSAI";
   const body = settings?.aboutBody ?? "Straight talk on AI for people building real things. No hype, no fluff — just what actually works.";
   const image = settings?.aboutImage ?? null;
-  const linkLabel = settings?.aboutLinkLabel ?? "Learn More";
+  const linkLabel = settings?.aboutLinkLabel ?? null;
+  const linkUrl = settings?.aboutLinkUrl ?? null;
 
   return (
     <div className="overflow-hidden" style={{ border: "2px solid #1a1a1a", background: "white", boxShadow: "4px 4px 0px #1a1a1a" }}>
@@ -238,13 +241,15 @@ function AboutSidebar({ settings }: { settings: SiteSettings | null }) {
           </div>
         )}
         <p className="text-sm leading-relaxed mb-4" style={{ color: "#4a4a4a" }}>{body}</p>
-        <Link
-          href="/about"
-          className="inline-block text-xs font-black uppercase px-4 py-2"
-          style={{ border: "2px solid #1a1a1a", color: "#1a1a1a", boxShadow: "2px 2px 0px #1a1a1a" }}
-        >
-          {linkLabel} →
-        </Link>
+        {linkLabel && linkUrl && (
+          <Link
+            href={linkUrl}
+            className="inline-block text-xs font-black uppercase px-4 py-2"
+            style={{ border: "2px solid #1a1a1a", color: "#1a1a1a", boxShadow: "2px 2px 0px #1a1a1a" }}
+          >
+            {linkLabel} →
+          </Link>
+        )}
       </div>
     </div>
   );
