@@ -39,6 +39,22 @@ async function getPosts(): Promise<Post[]> {
   );
 }
 
+type ReadingLink = {
+  _id: string;
+  title: string;
+  url: string;
+  source: string | null;
+  description: string | null;
+};
+
+async function getReadingList(): Promise<ReadingLink[]> {
+  return client.fetch(
+    `*[_type == "readingList"] | order(publishedAt desc) {
+      _id, title, url, source, description
+    }`
+  );
+}
+
 async function getWorkshops(): Promise<Workshop[]> {
   return client.fetch(
     `*[_type == "workshop"] | order(date asc) {
@@ -81,7 +97,7 @@ async function getSiteSettings(): Promise<SiteSettings> {
 
 
 export default async function Home() {
-  const [posts, workshops, settings] = await Promise.all([getPosts(), getWorkshops(), getSiteSettings()]);
+  const [posts, workshops, settings, links] = await Promise.all([getPosts(), getWorkshops(), getSiteSettings(), getReadingList()]);
   return (
     <div className="max-w-6xl mx-auto px-6 py-12">
       <div className="mb-8 pb-4" style={{ borderBottom: "2px solid #1a1a1a" }}>
@@ -103,7 +119,7 @@ export default async function Home() {
 
         <div className="w-full lg:w-80 flex-shrink-0 space-y-6">
           <WorkshopSidebar workshops={workshops} />
-
+          <ReadingListSidebar links={links} />
           <AboutSidebar settings={settings} />
         </div>
       </div>
@@ -253,4 +269,36 @@ function AboutSidebar({ settings }: { settings: SiteSettings | null }) {
       </div>
     </div>
   );
+}
+
+function ReadingListSidebar({ links }: { links: ReadingLink[] }) {
+  if (links.length === 0) return null;
+  return (
+    <div className="overflow-hidden" style={{ border: "2px solid #1a1a1a", background: "white", boxShadow: "4px 4px 0px #1a1a1a" }}>
+      <div className="px-5 py-4" style={{ background: "#f0ece0", borderBottom: "2px solid #1a1a1a" }}>
+        <div className="text-xs font-black uppercase tracking-widest mb-0.5" style={{ color: "#2d4a2d" }}>// Reading List</div>
+        <h2 className="font-black text-sm uppercase tracking-wide" style={{ color: "#1a1a1a" }}>Worth Your Time</h2>
+      </div>
+      <div className="divide-y" style={{ borderColor: "#e8e4d8" }}>
+        {links.map((link) => (
+          <a
+            key={link._id}
+            href={link.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block px-5 py-3 hover:bg-stone-50 transition-colors"
+          >
+            <div className="text-sm font-bold leading-snug mb-0.5" style={{ color: "#1a1a1a" }}>{link.title}</div>
+            {link.source && (
+              <div className="text-xs font-medium" style={{ color: "#2d4a2d" }}>{link.source}</div>
+            )}
+            {link.description && (
+              <div className="text-xs mt-0.5 leading-relaxed" style={{ color: "#6b6b6b" }}>{link.description}</div>
+            )}
+          </a>
+        ))}
+      </div>
+    </div>
+  );
+}
 }
