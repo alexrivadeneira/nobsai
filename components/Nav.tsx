@@ -31,7 +31,7 @@ export default function Nav() {
         </Link>
 
         <p className="text-base md:text-right max-w-xs leading-snug italic pb-2 md:pb-0" style={{ color: "#1a1a1a", fontFamily: "var(--font-fraunces)", fontWeight: 400, textShadow: "0 0 12px #f0ece0, 0 0 24px #f0ece0" }}>
-          The East Bay&apos;s home for practical, no-nonsense AI education.
+          The East Bay&apos;s home for practical, approachable AI education.
         </p>
       </div>
     </nav>

@@ -58,7 +58,7 @@ function JoinForm() {
           <Image src="/logo.png" alt="NoBSAI" width={56} height={56} className="object-contain" />
           <div>
             <div className="font-black text-xl uppercase tracking-tight" style={{ color: "#1a1a1a" }}>NoBSAI</div>
-            <div className="text-xs uppercase tracking-widest" style={{ color: "#2d4a2d" }}>No Bloat, Straight AI</div>
+            <div className="text-xs uppercase tracking-widest" style={{ color: "#2d4a2d" }}>No Bloat, Simple AI</div>
           </div>
         </div>
 
