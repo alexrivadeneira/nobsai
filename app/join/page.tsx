@@ -5,15 +5,15 @@ import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
 const DEFAULTS = {
-  label: "Free Guide",
-  headline: "How to Explain AI to Anyone — Without Sounding Like a Nerd",
+  label: "Community",
+  headline: "Get involved with the community!",
   body: "Drop your email and get instant access — plus be first to hear about upcoming in-person AI workshops in the East Bay.",
   bullets: [
-    "Plain-English explanations that actually land",
+    "Drilling down to the basics to build a solid foundation",
     "No jargon, no hype, no PhD required",
     "Real examples you can use today",
   ],
-  cta: "Access immediately →",
+  cta: "Join us →",
   redirect: "/read/how-to-explain-ai",
 };
 
@@ -65,7 +65,7 @@ function JoinForm() {
         <div style={{ border: "2px solid #1a1a1a", background: "white", boxShadow: "6px 6px 0 #1a1a1a" }}>
           <div className="p-8" style={{ borderBottom: "2px solid #1a1a1a", background: "#2d4a2d" }}>
             <div className="text-xs font-black uppercase tracking-widest mb-2" style={{ color: "#7ab87a" }}>// {label}</div>
-            <h1 className="text-2xl font-black uppercase leading-tight text-white">{headline}</h1>
+            <h1 className="text-2xl leading-tight text-white" style={{ fontFamily: "var(--font-fraunces)", fontWeight: 700 }}>{headline}</h1>
           </div>
 
           <div className="p-8">

@@ -97,11 +97,11 @@ export default async function BlogPost({ params }: Props) {
   const comments = await getComments(slug);
 
   if (post.gated && !hasAccess) {
-    const joinUrl = `/join?redirect=/blog/${slug}&headline=${encodeURIComponent(post.title)}&label=Members+Only`;
+    const joinUrl = `/join?redirect=/blog/${slug}&headline=${encodeURIComponent(post.title)}&label=Community`;
     return (
       <div className="max-w-2xl mx-auto px-6 py-24 text-center">
         <div className="inline-block text-xs font-black uppercase tracking-widest px-3 py-1 mb-6" style={{ background: "#2d4a2d", color: "white" }}>
-          // Gated content
+          // Community
         </div>
         <h1 className="text-3xl leading-tight mb-4" style={{ color: "#1a1a1a", fontFamily: "var(--font-fraunces)", fontWeight: 700 }}>
           {post.title}
