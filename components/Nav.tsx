@@ -26,12 +26,12 @@ export default function Nav() {
             <div className="text-4xl leading-tight tracking-tight" style={{ fontFamily: "var(--font-fraunces)", fontWeight: 900 }}>
               <span style={{ color: "#1a1a1a" }}>NoBS</span><span style={{ color: "#2d4a2d" }}>AI</span>
             </div>
-            <div className="text-xs tracking-widest uppercase" style={{ color: "#2d4a2d" }}>No Bloat, Straight AI</div>
+            <div className="text-xs tracking-widest uppercase" style={{ color: "#2d4a2d" }}>No bloat, simply AI</div>
           </div>
         </Link>
 
         <p className="text-base md:text-right max-w-xs leading-snug italic pb-2 md:pb-0" style={{ color: "#1a1a1a", fontFamily: "var(--font-fraunces)", fontWeight: 400, textShadow: "0 0 12px #f0ece0, 0 0 24px #f0ece0" }}>
-          The East Bay&apos;s home for actionable, no-nonsense AI education.
+          The East Bay&apos;s home for practical, no-nonsense AI education.
         </p>
       </div>
     </nav>
