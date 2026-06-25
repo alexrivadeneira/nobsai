@@ -64,6 +64,7 @@ export default function SurveyBar() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (learnInterests.length === 0 || hearAbout.length === 0) return;
     setSending(true);
     await fetch("/api/survey", {
       method: "POST",
@@ -187,7 +188,7 @@ export default function SurveyBar() {
 
               {/* What to learn */}
               <div>
-                <label className="block text-xs font-black uppercase tracking-widest mb-2" style={{ color: "#6b6b6b" }}>What would you like to learn about AI?</label>
+                <label className="block text-xs font-black uppercase tracking-widest mb-2" style={{ color: "#6b6b6b" }}>What would you like to learn about AI? <span style={{ color: "#c0392b" }}>*</span></label>
                 <div className="flex flex-wrap gap-2">
                   {LEARN_OPTIONS.map((opt) => (
                     <button
@@ -231,7 +232,7 @@ export default function SurveyBar() {
 
               {/* How did you hear */}
               <div>
-                <label className="block text-xs font-black uppercase tracking-widest mb-2" style={{ color: "#6b6b6b" }}>How did you hear about us?</label>
+                <label className="block text-xs font-black uppercase tracking-widest mb-2" style={{ color: "#6b6b6b" }}>How did you hear about us? <span style={{ color: "#c0392b" }}>*</span></label>
                 <div className="flex flex-wrap gap-2">
                   {HEAR_OPTIONS.map((opt) => (
                     <button
@@ -253,9 +254,14 @@ export default function SurveyBar() {
 
               <button
                 type="submit"
-                disabled={sending}
+                disabled={sending || learnInterests.length === 0 || hearAbout.length === 0}
                 className="w-full py-3 text-sm font-black uppercase text-white"
-                style={{ background: "#2d4a2d", border: "2px solid #1a1a1a", boxShadow: "3px 3px 0 #1a1a1a" }}
+                style={{
+                  background: learnInterests.length === 0 || hearAbout.length === 0 ? "#9a9a9a" : "#2d4a2d",
+                  border: "2px solid #1a1a1a",
+                  boxShadow: "3px 3px 0 #1a1a1a",
+                  cursor: learnInterests.length === 0 || hearAbout.length === 0 ? "not-allowed" : "pointer",
+                }}
               >
                 {sending ? "Saving..." : "Submit →"}
               </button>

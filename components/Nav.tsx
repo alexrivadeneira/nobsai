@@ -26,7 +26,7 @@ export default function Nav() {
             <div className="text-4xl leading-tight tracking-tight" style={{ fontFamily: "var(--font-fraunces)", fontWeight: 900 }}>
               <span style={{ color: "#1a1a1a" }}>NoBS</span><span style={{ color: "#2d4a2d" }}>AI</span>
             </div>
-            <div className="text-xs tracking-widest uppercase" style={{ color: "#2d4a2d" }}>No bloat, simply AI</div>
+            <div className="text-xs tracking-widest uppercase" style={{ color: "#2d4a2d" }}>No bloat, simple AI</div>
           </div>
         </Link>
 
