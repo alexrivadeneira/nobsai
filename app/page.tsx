@@ -301,4 +301,3 @@ function ReadingListSidebar({ links }: { links: ReadingLink[] }) {
     </div>
   );
 }
-}
