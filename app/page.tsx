@@ -136,7 +136,7 @@ function Hero({ settings }: { settings: SiteSettings | null }) {
   const image = settings?.heroImage ?? "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1200&q=80";
 
   return (
-    <div className="relative overflow-hidden" style={{ minHeight: "320px", border: "2px solid #1a1a1a", boxShadow: "6px 6px 0px #1a1a1a" }}>
+    <div className="relative overflow-hidden" style={{ height: "clamp(280px, 50vw, 360px)", border: "2px solid #1a1a1a", boxShadow: "6px 6px 0px #1a1a1a" }}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={image} alt={headline} className="w-full h-full object-cover" />
       <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.2) 60%, transparent 100%)" }} />
