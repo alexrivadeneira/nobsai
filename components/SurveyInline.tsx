@@ -23,7 +23,9 @@ export default function SurveyInline() {
   const [dismissed, setDismissed] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [sending, setSending] = useState(false);
+  const [existingEmail, setExistingEmail] = useState<string | null>(null);
 
+  const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [ageRange, setAgeRange] = useState("");
@@ -32,9 +34,11 @@ export default function SurveyInline() {
   const [hearAbout, setHearAbout] = useState<string[]>([]);
 
   useEffect(() => {
-    const hasAccess = getCookie("nobsai_access") === "1";
     const doneSurvey = getCookie("nobsai_survey_done") === "1";
-    setShow(hasAccess && !doneSurvey);
+    if (doneSurvey) return;
+    const savedEmail = getCookie("nobsai_email");
+    setExistingEmail(savedEmail);
+    setShow(true);
   }, []);
 
   function toggleLearn(val: string) {
@@ -50,11 +54,28 @@ export default function SurveyInline() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (learnInterests.length === 0 || hearAbout.length === 0) return;
+    const emailToUse = existingEmail || email;
+    if (!emailToUse) return;
     setSending(true);
+
+    // If not already subscribed, subscribe first
+    if (!existingEmail) {
+      const subRes = await fetch("/api/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: emailToUse, redirect: "/" }),
+      });
+      const subData = await subRes.json();
+      if (!subData.success) {
+        setSending(false);
+        return;
+      }
+    }
+
     await fetch("/api/survey", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ firstName, lastName, ageRange, learningInterests: learnInterests, devExperience: devExp, hearAboutUs: hearAbout.join(", ") }),
+      body: JSON.stringify({ email: emailToUse, firstName, lastName, ageRange, learningInterests: learnInterests, devExperience: devExp, hearAboutUs: hearAbout.join(", ") }),
     });
     setCookie("nobsai_survey_done", "1", 365 * 10);
     setSending(false);
@@ -102,6 +123,14 @@ export default function SurveyInline() {
             </p>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-5">
+              {/* Email — only if not already subscribed */}
+              {!existingEmail && (
+                <div>
+                  <label className="block text-xs font-black uppercase tracking-widest mb-1" style={{ color: "#6b6b6b" }}>Email <span style={{ color: "#c0392b" }}>*</span></label>
+                  <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="your@email.com" className="w-full px-3 py-2 text-sm" style={{ border: "2px solid #1a1a1a", background: "#f0ece0" }} />
+                </div>
+              )}
+
               {/* Name */}
               <div className="flex gap-3">
                 <div className="flex-1">
@@ -156,9 +185,13 @@ export default function SurveyInline() {
 
               <button
                 type="submit"
-                disabled={sending || learnInterests.length === 0 || hearAbout.length === 0}
+                disabled={sending || learnInterests.length === 0 || hearAbout.length === 0 || (!existingEmail && !email)}
                 className="w-full py-3 text-sm font-black uppercase text-white"
-                style={{ background: learnInterests.length === 0 || hearAbout.length === 0 ? "#9a9a9a" : "#2d4a2d", border: "2px solid #1a1a1a", boxShadow: "3px 3px 0 #1a1a1a", cursor: learnInterests.length === 0 || hearAbout.length === 0 ? "not-allowed" : "pointer" }}
+                style={{
+                  background: (learnInterests.length === 0 || hearAbout.length === 0 || (!existingEmail && !email)) ? "#9a9a9a" : "#2d4a2d",
+                  border: "2px solid #1a1a1a", boxShadow: "3px 3px 0 #1a1a1a",
+                  cursor: (learnInterests.length === 0 || hearAbout.length === 0 || (!existingEmail && !email)) ? "not-allowed" : "pointer"
+                }}
               >
                 {sending ? "Saving..." : "Submit →"}
               </button>
