@@ -18,19 +18,19 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "NoBSAI",
+  title: "noBSAI",
   description: "The East Bay's home for practical, no-nonsense AI education.",
   openGraph: {
-    title: "NoBSAI",
+    title: "noBSAI",
     description: "The East Bay's home for practical, no-nonsense AI education.",
     url: "https://www.nobsai.tech",
-    siteName: "NoBSAI",
-    images: [{ url: "https://www.nobsai.tech/logo.png", width: 800, height: 800, alt: "NoBSAI" }],
+    siteName: "noBSAI",
+    images: [{ url: "https://www.nobsai.tech/logo.png", width: 800, height: 800, alt: "noBSAI" }],
     type: "website",
   },
   twitter: {
     card: "summary",
-    title: "NoBSAI",
+    title: "noBSAI",
     description: "The East Bay's home for practical, no-nonsense AI education.",
     images: ["https://www.nobsai.tech/logo.png"],
   },
@@ -59,10 +59,10 @@ function Footer() {
     <footer className="mt-16 py-10 px-8" style={{ background: "#1a1a1a", borderTop: "2px solid #1a1a1a" }}>
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between gap-6">
         <div>
-          <div className="text-lg tracking-tight text-white mb-1" style={{ fontFamily: "var(--font-fraunces)", fontWeight: 900 }}>NoBSAI</div>
+          <div className="text-lg tracking-tight text-white mb-1" style={{ fontFamily: "var(--font-fraunces)", fontWeight: 900 }}>noBSAI</div>
           <div className="text-xs uppercase tracking-widest" style={{ color: "#7ab87a" }}>No Bloat, Simple AI</div>
         </div>
-        <div className="text-xs text-white/40 self-end">© 2025 NoBSAI</div>
+        <div className="text-xs text-white/40 self-end">© 2025 noBSAI</div>
       </div>
     </footer>
   );

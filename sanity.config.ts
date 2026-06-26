@@ -6,7 +6,7 @@ import { CopyJoinLinkAction } from "./sanity/actions/CopyJoinLink";
 
 export default defineConfig({
   name: "default",
-  title: "NoBSAI",
+  title: "noBSAI",
   projectId: "sf46mco2",
   dataset: "production",
   plugins: [structureTool(), visionTool()],

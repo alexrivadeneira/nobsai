@@ -55,9 +55,9 @@ function JoinForm() {
       <div className="w-full max-w-lg">
 
         <div className="flex items-center gap-3 mb-10">
-          <Image src="/logo.png" alt="NoBSAI" width={56} height={56} className="object-contain" />
+          <Image src="/logo.png" alt="noBSAI" width={56} height={56} className="object-contain" />
           <div>
-            <div className="font-black text-xl uppercase tracking-tight" style={{ color: "#1a1a1a" }}>NoBSAI</div>
+            <div className="font-black text-xl uppercase tracking-tight" style={{ color: "#1a1a1a" }}>noBSAI</div>
             <div className="text-xs uppercase tracking-widest" style={{ color: "#2d4a2d" }}>No Bloat, Simple AI</div>
           </div>
         </div>

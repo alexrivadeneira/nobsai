@@ -8,7 +8,7 @@ export default function HowToExplainAI() {
         <h1 className="text-4xl font-black uppercase leading-tight mb-4" style={{ color: "#1a1a1a" }}>
           How to Explain AI to Anyone — Without Sounding Like a Nerd
         </h1>
-        <div className="text-sm font-medium" style={{ color: "#6b6b6b" }}>By Alex · NoBSAI</div>
+        <div className="text-sm font-medium" style={{ color: "#6b6b6b" }}>By Alex · noBSAI</div>
       </div>
 
       <div className="space-y-6 text-base leading-relaxed" style={{ color: "#2a2a2a" }}>
@@ -16,7 +16,7 @@ export default function HowToExplainAI() {
           Replace this with your actual content. This page is only reachable after someone submits their email on the /join page — it's not linked anywhere public.
         </p>
         <p>
-          Write your guide here. Use plain language, real examples, and keep it practical. That's the whole point of NoBSAI.
+          Write your guide here. Use plain language, real examples, and keep it practical. That's the whole point of noBSAI.
         </p>
       </div>
 

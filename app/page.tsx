@@ -239,7 +239,7 @@ function WorkshopSidebar({ workshops }: { workshops: Workshop[] }) {
 }
 
 function AboutSidebar({ settings }: { settings: SiteSettings | null }) {
-  const title = settings?.aboutTitle ?? "About NoBSAI";
+  const title = settings?.aboutTitle ?? "About noBSAI";
   const body = settings?.aboutBody ?? "Straight talk on AI for people building real things. No hype, no fluff — just what actually works.";
   const image = settings?.aboutImage ?? null;
   const linkLabel = settings?.aboutLinkLabel ?? null;

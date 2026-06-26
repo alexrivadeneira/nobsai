@@ -21,7 +21,7 @@ export default function Nav() {
       }} />
       <div className="max-w-6xl mx-auto px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2" style={{ position: "relative" }}>
         <Link href="/" className="flex items-center gap-3">
-          <Image src="/logo.png" alt="NoBSAI" width={80} height={80} className="object-contain" />
+          <Image src="/logo.png" alt="noBSAI" width={80} height={80} className="object-contain" />
           <div>
             <div className="text-4xl leading-tight tracking-tight" style={{ fontFamily: "var(--font-fraunces)", fontWeight: 900 }}>
               <span style={{ color: "#1a1a1a" }}>NoBS</span><span style={{ color: "#2d4a2d" }}>AI</span>

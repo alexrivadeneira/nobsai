@@ -13,13 +13,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = await getPost(slug);
   if (!post) return {};
   return {
-    title: `${post.title} | NoBSAI`,
+    title: `${post.title} | noBSAI`,
     description: post.excerpt ?? "Practical AI education from the East Bay.",
     openGraph: {
       title: post.title,
       description: post.excerpt ?? "Practical AI education from the East Bay.",
       url: `https://www.nobsai.tech/blog/${slug}`,
-      siteName: "NoBSAI",
+      siteName: "noBSAI",
       images: post.image ? [{ url: post.image, alt: post.title }] : [{ url: "https://www.nobsai.tech/logo.png" }],
       type: "article",
     },
