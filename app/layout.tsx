@@ -19,7 +19,21 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "NoBSAI",
-  description: "Straight talk on AI — no fluff, no hype.",
+  description: "The East Bay's home for practical, no-nonsense AI education.",
+  openGraph: {
+    title: "NoBSAI",
+    description: "The East Bay's home for practical, no-nonsense AI education.",
+    url: "https://www.nobsai.tech",
+    siteName: "NoBSAI",
+    images: [{ url: "https://www.nobsai.tech/logo.png", width: 800, height: 800, alt: "NoBSAI" }],
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "NoBSAI",
+    description: "The East Bay's home for practical, no-nonsense AI education.",
+    images: ["https://www.nobsai.tech/logo.png"],
+  },
 };
 
 export default function RootLayout({

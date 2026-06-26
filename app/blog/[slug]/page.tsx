@@ -4,8 +4,33 @@ import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
 import Link from "next/link";
 import CommentSection from "./CommentSection";
+import type { Metadata } from "next";
 
 type Props = { params: Promise<{ slug: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+  const post = await getPost(slug);
+  if (!post) return {};
+  return {
+    title: `${post.title} | NoBSAI`,
+    description: post.excerpt ?? "Practical AI education from the East Bay.",
+    openGraph: {
+      title: post.title,
+      description: post.excerpt ?? "Practical AI education from the East Bay.",
+      url: `https://www.nobsai.tech/blog/${slug}`,
+      siteName: "NoBSAI",
+      images: post.image ? [{ url: post.image, alt: post.title }] : [{ url: "https://www.nobsai.tech/logo.png" }],
+      type: "article",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.excerpt ?? "Practical AI education from the East Bay.",
+      images: post.image ? [post.image] : ["https://www.nobsai.tech/logo.png"],
+    },
+  };
+}
 
 async function getPost(slug: string) {
   return client.fetch(
