@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { client } from "@/sanity/lib/client";
+import SurveyInline from "@/components/SurveyInline";
 
 export const revalidate = 60; // re-fetch from Sanity every 60 seconds
 
@@ -109,6 +110,7 @@ export default async function Home() {
 
       <div className="flex flex-col lg:flex-row gap-8">
         <div className="flex-1">
+          <SurveyInline />
           <Hero settings={settings} />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 auto-rows-fr mt-6">
             {posts.map((post) => (
