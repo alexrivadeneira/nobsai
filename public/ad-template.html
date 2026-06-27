@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>NoBSAI Ad Template</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #888; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; gap: 40px; padding: 40px; font-family: Arial Black, Arial, sans-serif; }
+
+  .label { color: white; font-size: 13px; font-family: monospace; align-self: flex-start; }
+
+  /* ── EDIT THESE VALUES ──────────────────────────────── */
+
+  /* Colors */
+  :root {
+    --green-dark:  #2d4a2d;
+    --green-light: #7ab87a;
+    --green-text:  #c8e6c8;
+    --cream:       #f0ece0;
+    --black:       #1a1a1a;
+  }
+
+  /* ── 1200×628 landscape ─────────────────────────────── */
+  .ad-landscape {
+    width: 1200px;
+    height: 628px;
+    background: var(--green-dark);
+    border: 2px solid var(--black);
+    display: flex;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .ad-landscape .left {
+    flex: 1;
+    padding: 20px 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .ad-landscape .kicker {
+    font-size: 32px;
+    font-weight: 900;
+    color: var(--green-light);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
+  }
+
+  .ad-landscape .headline {
+    font-size: 62px;
+    font-weight: 900;
+    color: white;
+    line-height: 0.92;
+    letter-spacing: -0.02em;
+  }
+
+  .ad-landscape .headline .dim { opacity: 0.45; }
+
+  .ad-landscape .oakland {
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--green-light);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    transform: rotate(-8deg) translateX(4px);
+    display: inline-block;
+    margin-top: 4px;
+  }
+
+  .ad-landscape .bottom { display: flex; flex-direction: column; gap: 10px; }
+
+  .ad-landscape .cta-btn {
+    display: inline-flex;
+    background: var(--cream);
+    border: 2px solid var(--black);
+    box-shadow: 3px 3px 0 var(--black);
+    padding: 8px 16px;
+    font-size: 15px;
+    font-weight: 900;
+    color: var(--black);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .ad-landscape .body-copy {
+    font-size: 16px;
+    color: var(--green-text);
+    line-height: 1.4;
+  }
+
+  .ad-landscape .body-copy strong { color: white; }
+
+  .ad-landscape .right {
+    width: 22%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 14px;
+    border-left: 3px solid rgba(255,255,255,0.12);
+  }
+
+  .ad-landscape .right img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(6px 6px 0px rgba(0,0,0,0.4));
+  }
+
+  /* ── 1080×1080 square ───────────────────────────────── */
+  .ad-square {
+    width: 1080px;
+    height: 1080px;
+    background: var(--green-dark);
+    border: 2px solid var(--black);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 60px;
+    justify-content: space-between;
+  }
+
+  .ad-square .kicker {
+    font-size: 38px;
+    font-weight: 900;
+    color: var(--green-light);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 12px;
+  }
+
+  .ad-square .headline {
+    font-size: 96px;
+    font-weight: 900;
+    color: white;
+    line-height: 0.92;
+    letter-spacing: -0.02em;
+  }
+
+  .ad-square .headline .dim { opacity: 0.45; }
+
+  .ad-square .oakland {
+    font-size: 34px;
+    font-weight: 900;
+    color: var(--green-light);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    transform: rotate(-8deg) translateX(6px);
+    display: inline-block;
+    margin-top: 6px;
+  }
+
+  .ad-square .bottom { display: flex; gap: 40px; align-items: center; }
+
+  .ad-square .right img {
+    width: 240px;
+    object-fit: contain;
+    filter: drop-shadow(8px 8px 0px rgba(0,0,0,0.4));
+    flex-shrink: 0;
+  }
+
+  .ad-square .bottom-copy { display: flex; flex-direction: column; gap: 16px; }
+
+  .ad-square .cta-btn {
+    display: inline-flex;
+    background: var(--cream);
+    border: 2px solid var(--black);
+    box-shadow: 4px 4px 0 var(--black);
+    padding: 12px 24px;
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--black);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .ad-square .body-copy {
+    font-size: 22px;
+    color: var(--green-text);
+    line-height: 1.4;
+  }
+
+  .ad-square .body-copy strong { color: white; }
+</style>
+</head>
+<body>
+
+  <div class="label">1200 × 628 — landscape (feed / link ad)</div>
+  <div class="ad-landscape">
+    <div class="left">
+      <div>
+        <!-- ✏️ KICKER -->
+        <div class="kicker">AI at your command.</div>
+
+        <!-- ✏️ HEADLINE — wrap words in <span class="dim"> to fade them -->
+        <div class="headline">
+          <span class="dim">practical </span>AI<br>
+          <span class="dim">without</span><br>
+          Hype.
+        </div>
+
+        <!-- ✏️ LOCATION STAMP -->
+        <div class="oakland">in Oakland</div>
+      </div>
+
+      <div class="bottom">
+        <!-- ✏️ CTA BUTTON TEXT -->
+        <div class="cta-btn">Sign up</div>
+
+        <!-- ✏️ BODY COPY -->
+        <div class="body-copy">
+          Get the free <strong>"Explain AI to your friends"</strong> guide.<br>
+          In-person, build-your-own-agent workshops in the East Bay — no code needed.
+        </div>
+      </div>
+    </div>
+
+    <div class="right">
+      <!-- ✏️ SWAP guide-icon.png for any image -->
+      <img src="guide-icon.png" alt="Free AI guide" />
+    </div>
+  </div>
+
+
+  <div class="label">1080 × 1080 — square</div>
+  <div class="ad-square">
+    <div>
+      <div class="kicker">AI at your command.</div>
+      <div class="headline">
+        <span class="dim">practical </span>AI<br>
+        <span class="dim">without</span><br>
+        Hype.
+      </div>
+      <div class="oakland">in Oakland</div>
+    </div>
+
+    <div class="bottom">
+      <img src="guide-icon.png" alt="Free AI guide" />
+      <div class="bottom-copy">
+        <div class="cta-btn">Sign up</div>
+        <div class="body-copy">
+          Get the free <strong>"Explain AI to your friends"</strong> guide.<br>
+          In-person workshops in the East Bay — no code needed.
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -19,21 +19,21 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "noBSAI",
-  description: "The East Bay's home for practical, no-nonsense AI education.",
+  title: "noBSAI — AI without the hype",
+  description: "Plain-English AI education for East Bay locals. Free guide + in-person workshops. No jargon, no PhD required.",
   openGraph: {
-    title: "noBSAI",
-    description: "The East Bay's home for practical, no-nonsense AI education.",
+    title: "noBSAI — AI without the hype",
+    description: "Plain-English AI education for East Bay locals. Free guide + in-person workshops. No jargon, no PhD required.",
     url: "https://www.nobsai.tech",
     siteName: "noBSAI",
-    images: [{ url: "https://www.nobsai.tech/logo.png", width: 800, height: 800, alt: "noBSAI" }],
+    images: [{ url: "https://www.nobsai.tech/og-image.png", width: 1200, height: 628, alt: "noBSAI — AI without the hype" }],
     type: "website",
   },
   twitter: {
-    card: "summary",
-    title: "noBSAI",
-    description: "The East Bay's home for practical, no-nonsense AI education.",
-    images: ["https://www.nobsai.tech/logo.png"],
+    card: "summary_large_image",
+    title: "noBSAI — AI without the hype",
+    description: "Plain-English AI education for East Bay locals. Free guide + in-person workshops. No jargon, no PhD required.",
+    images: ["https://www.nobsai.tech/og-image.png"],
   },
 };
 
