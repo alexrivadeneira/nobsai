@@ -40,6 +40,7 @@ async function getPost(slug: string) {
       "date": coalesce(publishedAt, _createdAt),
       author,
       category,
+      tags,
       "image": coverImage.asset->url,
       gated,
       body
@@ -57,11 +58,19 @@ async function getComments(postSlug: string) {
   );
 }
 
-const components: PortableTextComponents = {
+function makeComponents(): PortableTextComponents {
+  let paragraphIndex = 0;
+  return {
   block: {
-    normal: ({ children }) => (
-      <p style={{ marginBottom: "1.5rem", lineHeight: "1.8", fontSize: "1.0625rem", color: "#2a2a2a" }}>{children}</p>
-    ),
+    normal: ({ children }) => {
+      const isFirst = paragraphIndex === 0;
+      paragraphIndex++;
+      return (
+        <p className={isFirst ? "drop-cap" : ""} style={{ marginBottom: "1.5rem", lineHeight: "1.8", fontSize: "1.0625rem", color: "#2a2a2a" }}>
+          {children}
+        </p>
+      );
+    },
     h2: ({ children }) => (
       <h2 style={{ fontSize: "1.5rem", fontWeight: 900, textTransform: "uppercase", letterSpacing: "-0.01em", marginTop: "2.5rem", marginBottom: "1rem", color: "#1a1a1a" }}>{children}</h2>
     ),
@@ -69,7 +78,17 @@ const components: PortableTextComponents = {
       <h3 style={{ fontSize: "1.2rem", fontWeight: 900, textTransform: "uppercase", marginTop: "2rem", marginBottom: "0.75rem", color: "#1a1a1a" }}>{children}</h3>
     ),
     blockquote: ({ children }) => (
-      <blockquote style={{ borderLeft: "4px solid #2d4a2d", paddingLeft: "1.25rem", margin: "2rem 0", color: "#4a4a4a", fontStyle: "italic", fontSize: "1.1rem" }}>{children}</blockquote>
+      <blockquote style={{
+        margin: "2.5rem -1.5rem",
+        padding: "1.5rem 1.75rem",
+        background: "#f0ece0",
+        borderLeft: "5px solid #2d4a2d",
+        boxShadow: "4px 4px 0 #2d4a2d",
+      }}>
+        <div style={{ fontSize: "1.2rem", fontStyle: "italic", lineHeight: "1.7", color: "#1a1a1a", fontFamily: "var(--font-fraunces)", fontWeight: 500 }}>
+          {children}
+        </div>
+      </blockquote>
     ),
   },
   marks: {
@@ -92,24 +111,25 @@ const components: PortableTextComponents = {
     bullet: ({ children }) => <li style={{ marginBottom: "0.5rem", lineHeight: "1.7", color: "#2a2a2a" }}>{children}</li>,
     number: ({ children }) => <li style={{ marginBottom: "0.5rem", lineHeight: "1.7", color: "#2a2a2a" }}>{children}</li>,
   },
-  types: {
-    vimeoEmbed: ({ value }: { value: { vimeoId: string; caption?: string } }) => (
-      <div style={{ margin: "2rem 0" }}>
-        <div style={{ position: "relative", paddingBottom: "56.25%", height: 0, border: "2px solid #1a1a1a", boxShadow: "4px 4px 0 #1a1a1a" }}>
-          <iframe
-            src={`https://player.vimeo.com/video/${value.vimeoId}`}
-            style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
-            allow="autoplay; fullscreen; picture-in-picture"
-            allowFullScreen
-          />
+    types: {
+      vimeoEmbed: ({ value }: { value: { vimeoId: string; caption?: string } }) => (
+        <div style={{ margin: "2rem 0" }}>
+          <div style={{ position: "relative", paddingBottom: "56.25%", height: 0, border: "2px solid #1a1a1a", boxShadow: "4px 4px 0 #1a1a1a" }}>
+            <iframe
+              src={`https://player.vimeo.com/video/${value.vimeoId}`}
+              style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
+              allow="autoplay; fullscreen; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+          {value.caption && (
+            <p style={{ marginTop: "0.5rem", fontSize: "0.875rem", color: "#6b6b6b", fontStyle: "italic" }}>{value.caption}</p>
+          )}
         </div>
-        {value.caption && (
-          <p style={{ marginTop: "0.5rem", fontSize: "0.875rem", color: "#6b6b6b", fontStyle: "italic" }}>{value.caption}</p>
-        )}
-      </div>
-    ),
-  },
-};
+      ),
+    },
+  };
+}
 
 export default async function BlogPost({ params }: Props) {
   const { slug } = await params;
@@ -146,39 +166,55 @@ export default async function BlogPost({ params }: Props) {
     );
   }
 
+  const components = makeComponents();
+
   return (
     <div className="max-w-2xl mx-auto px-6 py-12">
-      {/* Header */}
-      <div className="mb-8" style={{ borderBottom: "2px solid #1a1a1a", paddingBottom: "2rem" }}>
-        {post.category && (
-          <div className="text-xs font-black uppercase tracking-widest mb-3" style={{ color: "#2d4a2d" }}>
-            // {post.category}
+
+      {/* Green header block */}
+      <div className="mb-8" style={{ border: "2px solid #1a1a1a", boxShadow: "6px 6px 0 #1a1a1a" }}>
+        <div className="p-8" style={{ background: "#2d4a2d" }}>
+          {post.category && (
+            <div className="text-xs font-black uppercase tracking-widest mb-3" style={{ color: "#7ab87a" }}>
+              // {post.category}
+            </div>
+          )}
+          <h1 className="leading-tight mb-4 text-white" style={{ fontSize: "2.25rem", fontFamily: "var(--font-fraunces)", fontWeight: 700 }}>
+            {post.title}
+          </h1>
+          {post.excerpt && (
+            <p className="text-base leading-relaxed mb-5" style={{ color: "#c8e6c8" }}>
+              {post.excerpt}
+            </p>
+          )}
+          <div className="flex items-center gap-3 text-xs font-medium" style={{ color: "#7ab87a" }}>
+            {post.author && <span>{post.author}</span>}
+            {post.author && <span>·</span>}
+            <span>{new Date(post.date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</span>
           </div>
-        )}
-        <h1 className="leading-tight mb-4" style={{ fontSize: "2.25rem", fontFamily: "var(--font-fraunces)", fontWeight: 700, color: "#1a1a1a" }}>
-          {post.title}
-        </h1>
-        {post.excerpt && (
-          <p className="text-lg leading-relaxed mb-4" style={{ color: "#4a4a4a" }}>
-            {post.excerpt}
-          </p>
-        )}
-        <div className="flex items-center gap-3 text-sm font-medium" style={{ color: "#6b6b6b" }}>
-          {post.author && <span>{post.author}</span>}
-          {post.author && <span>·</span>}
-          <span>{new Date(post.date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</span>
         </div>
+
+        {/* Cover image flush inside the card */}
+        {post.image && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={post.image}
+            alt={post.title}
+            className="w-full object-cover"
+            style={{ maxHeight: "420px", borderTop: "2px solid #1a1a1a", display: "block" }}
+          />
+        )}
       </div>
 
-      {/* Cover image */}
-      {post.image && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={post.image}
-          alt={post.title}
-          className="w-full mb-10 object-cover"
-          style={{ maxHeight: "480px", border: "2px solid #1a1a1a", boxShadow: "4px 4px 0px #1a1a1a" }}
-        />
+      {/* Key terms chips */}
+      {post.tags && post.tags.length > 0 && (
+        <div className="flex flex-wrap gap-2 mb-8">
+          {post.tags.map((tag: string) => (
+            <span key={tag} className="text-xs font-black uppercase tracking-widest px-3 py-1" style={{ border: "2px solid #2d4a2d", color: "#2d4a2d", background: "white" }}>
+              {tag}
+            </span>
+          ))}
+        </div>
       )}
 
       {/* Body */}

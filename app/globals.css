@@ -12,3 +12,14 @@ button {
 button:disabled {
   cursor: not-allowed;
 }
+
+.drop-cap::first-letter {
+  float: left;
+  font-size: 4rem;
+  line-height: 0.8;
+  font-weight: 900;
+  margin-right: 0.1em;
+  margin-top: 0.05em;
+  color: #2d4a2d;
+  font-family: var(--font-fraunces);
+}
