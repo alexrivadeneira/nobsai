@@ -4,6 +4,7 @@ import "./globals.css";
 import Nav from "@/components/Nav";
 import SurveyBar from "@/components/SurveyBar";
 import { Analytics } from "@vercel/analytics/next";
+import Script from "next/script";
 
 const fraunces = Fraunces({
   variable: "--font-fraunces",
@@ -49,6 +50,13 @@ export default function RootLayout({
         <Footer />
         <SurveyBar />
         <Analytics />
+        <Script src="https://www.googletagmanager.com/gtag/js?id=G-4Q3YPNZTLL" strategy="afterInteractive" />
+        <Script id="ga4-init" strategy="afterInteractive">{`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-4Q3YPNZTLL');
+        `}</Script>
       </body>
     </html>
   );
