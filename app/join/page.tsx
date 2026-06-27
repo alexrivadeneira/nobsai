@@ -6,7 +6,7 @@ import { Suspense } from "react";
 
 const DEFAULTS = {
   label: "Free community",
-  headline: "AI without the hype. Finally.",
+  headline: "AI without hype!",
   body: "Every AI headline promises to change your life. We skip that part. NoBSAI is for people who want to actually understand how AI works — starting from the fundamentals, in plain English, with no marketing fluff.",
   bullets: [
     "What words like \"model\", \"token\", and \"prompt\" actually mean",

@@ -121,6 +121,14 @@ export default async function Home() {
 
         <div className="w-full lg:w-80 flex-shrink-0 space-y-6">
           <WorkshopSidebar workshops={workshops} />
+
+          <Link href="/join?guide=true" className="flex flex-col items-center gap-1 group">
+            <div className="text-sm font-black uppercase leading-snug group-hover:underline text-center" style={{ color: "#1a1a1a", textUnderlineOffset: "3px" }}>
+              Get the free resource: Explain AI to Anyone →
+            </div>
+            <img src="/guide-icon.png" alt="Free guide" style={{ width: "75%", objectFit: "contain" }} />
+          </Link>
+
           <ReadingListSidebar links={links} />
           <AboutSidebar settings={settings} />
         </div>
