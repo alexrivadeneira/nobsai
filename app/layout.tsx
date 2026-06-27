@@ -70,7 +70,7 @@ function Footer() {
           <div className="text-lg tracking-tight text-white mb-1" style={{ fontFamily: "var(--font-fraunces)", fontWeight: 900 }}>noBSAI</div>
           <div className="text-xs uppercase tracking-widest" style={{ color: "#7ab87a" }}>No Bloat, Simple AI</div>
         </div>
-        <div className="text-xs text-white/40 self-end">© 2025 noBSAI</div>
+        <div className="text-xs text-white/40 self-end">© 2026 noBSAI</div>
       </div>
     </footer>
   );
