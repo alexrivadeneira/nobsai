@@ -5,15 +5,15 @@ import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
 const DEFAULTS = {
-  label: "Community",
-  headline: "Get involved with the community!",
-  body: "Drop your email and get instant access — plus be first to hear about upcoming in-person AI workshops in the East Bay.",
+  label: "Free community",
+  headline: "AI without the hype. Finally.",
+  body: "Every AI headline promises to change your life. We skip that part. NoBSAI is for people who want to actually understand how AI works — starting from the fundamentals, in plain English, with no marketing fluff.",
   bullets: [
-    "Drilling down to the basics to build a solid foundation",
-    "No jargon, no hype, no PhD required",
-    "Real examples you can use today",
+    "What words like \"model\", \"token\", and \"prompt\" actually mean",
+    "How to build real tools without a CS degree or PhD",
+    "In-person East Bay workshops where we build stuff together",
   ],
-  cta: "Join us →",
+  cta: "Count me in →",
   redirect: "/read/how-to-explain-ai",
 };
 
@@ -28,6 +28,7 @@ function JoinForm() {
   const body = params.get("body") ?? DEFAULTS.body;
   const cta = params.get("cta") ?? DEFAULTS.cta;
   const redirect = params.get("redirect") ?? DEFAULTS.redirect;
+  const showGuide = params.get("guide") === "true";
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -54,13 +55,16 @@ function JoinForm() {
     <div className="min-h-screen flex flex-col items-center justify-center px-6 py-16" style={{ background: "#f0ece0" }}>
       <div className="w-full max-w-lg">
 
-        <div className="flex items-center gap-3 mb-10">
-          <Image src="/logo.png" alt="noBSAI" width={56} height={56} className="object-contain" />
-          <div>
-            <div className="font-black text-xl uppercase tracking-tight" style={{ color: "#1a1a1a" }}>noBSAI</div>
-            <div className="text-xs uppercase tracking-widest" style={{ color: "#2d4a2d" }}>No Bloat, Simple AI</div>
+{showGuide && (
+          <div className="mb-6 flex gap-5 items-center">
+            <Image src="/guide-icon.png" alt="Free guide" width={80} height={80} className="object-contain flex-shrink-0" />
+            <div>
+              <div className="text-xs font-black uppercase tracking-widest mb-1" style={{ color: "#2d4a2d" }}>// Free guide</div>
+              <p className="text-sm font-bold leading-snug" style={{ color: "#1a1a1a" }}>AI Without the Magic</p>
+              <p className="text-xs mt-1" style={{ color: "#4a4a4a" }}>Drop your email and we'll send it right over.</p>
+            </div>
           </div>
-        </div>
+        )}
 
         <div style={{ border: "2px solid #1a1a1a", background: "white", boxShadow: "6px 6px 0 #1a1a1a" }}>
           <div className="p-8" style={{ borderBottom: "2px solid #1a1a1a", background: "#2d4a2d" }}>
