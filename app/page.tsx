@@ -120,7 +120,7 @@ export default async function Home() {
         </div>
 
         <div className="w-full lg:w-80 flex-shrink-0 space-y-6">
-          <WorkshopSidebar workshops={workshops} />
+          <AboutSidebar settings={settings} />
 
           <Link href="/join?guide=true" className="flex flex-col items-center gap-1 group">
             <div className="text-sm font-black uppercase leading-snug group-hover:underline text-center" style={{ color: "#1a1a1a", textUnderlineOffset: "3px" }}>
@@ -129,8 +129,8 @@ export default async function Home() {
             <img src="/guide-icon.png" alt="Free guide" style={{ width: "75%", objectFit: "contain" }} />
           </Link>
 
+          <WorkshopSidebar workshops={workshops} />
           <ReadingListSidebar links={links} />
-          <AboutSidebar settings={settings} />
         </div>
       </div>
     </div>
@@ -211,8 +211,7 @@ function WorkshopSidebar({ workshops }: { workshops: Workshop[] }) {
       </div>
       {workshops.length === 0 ? (
         <div className="px-5 py-8 text-center">
-          <p className="text-sm font-black uppercase mb-1" style={{ color: "#2d4a2d" }}>Stay Tuned</p>
-          <p className="text-xs" style={{ color: "#6b6b6b" }}>New workshops are being scheduled. Check back soon.</p>
+          <p className="text-sm leading-relaxed" style={{ color: "#4a4a4a" }}>This site's where I publish and capture signups; the in-person workshops are exactly what I'm building now, which is why I'm here.</p>
         </div>
       ) : (
         <div className="divide-y-2" style={{ borderColor: "#1a1a1a" }}>
@@ -247,8 +246,8 @@ function WorkshopSidebar({ workshops }: { workshops: Workshop[] }) {
 }
 
 function AboutSidebar({ settings }: { settings: SiteSettings | null }) {
-  const title = settings?.aboutTitle ?? "About noBSAI";
-  const body = settings?.aboutBody ?? "Straight talk on AI for people building real things. No hype, no fluff — just what actually works.";
+  const title = settings?.aboutTitle ?? "About Us";
+  const body = settings?.aboutBody ?? "I'm a Meta and Salesforce engineer and educator, and now I teach AI in plain English.";
   const image = settings?.aboutImage ?? null;
   const linkLabel = settings?.aboutLinkLabel ?? null;
   const linkUrl = settings?.aboutLinkUrl ?? null;
@@ -267,6 +266,7 @@ function AboutSidebar({ settings }: { settings: SiteSettings | null }) {
           </div>
         )}
         <p className="text-sm leading-relaxed mb-4" style={{ color: "#4a4a4a" }}>{body}</p>
+        <img src="/creds.png" alt="Meta and Salesforce" className="w-full object-contain mb-4" />
         {linkLabel && linkUrl && (
           <Link
             href={linkUrl}
