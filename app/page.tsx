@@ -28,7 +28,7 @@ type Workshop = {
 
 async function getPosts(): Promise<Post[]> {
   return client.fetch(
-    `*[_type == "post"] | order(publishedAt desc) {
+    `*[_type == "post"] | order(coalesce(publishedAt, _createdAt) desc) {
       "slug": slug.current,
       title,
       excerpt,
