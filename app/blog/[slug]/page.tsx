@@ -49,6 +49,20 @@ async function getPost(slug: string) {
   );
 }
 
+async function getOtherPosts(currentSlug: string) {
+  return client.fetch(
+    `*[_type == "post" && slug.current != $slug] | order(coalesce(publishedAt, _createdAt) desc) {
+      "slug": slug.current,
+      title,
+      excerpt,
+      "date": coalesce(publishedAt, _createdAt),
+      category,
+      "image": coverImage.asset->url
+    }`,
+    { slug: currentSlug }
+  );
+}
+
 async function getComments(postSlug: string) {
   return client.fetch(
     `*[_type == "comment" && postSlug == $postSlug && approved == true] | order(submittedAt asc) {
@@ -139,7 +153,7 @@ export default async function BlogPost({ params }: Props) {
 
   const cookieStore = await cookies();
   const hasAccess = cookieStore.get("nobsai_access")?.value === "1";
-  const comments = await getComments(slug);
+  const [comments, otherPosts] = await Promise.all([getComments(slug), getOtherPosts(slug)]);
 
   if (post.gated && !hasAccess) {
     const joinUrl = `/join?redirect=/blog/${slug}&headline=${encodeURIComponent(post.title)}&label=Community`;
@@ -169,68 +183,104 @@ export default async function BlogPost({ params }: Props) {
   const components = makeComponents();
 
   return (
-    <div className="max-w-2xl mx-auto px-6 py-12">
+    <div className="max-w-5xl mx-auto px-6 py-12">
+      <div className="flex flex-col lg:flex-row gap-10">
 
-      {/* Green header block */}
-      <div className="mb-8" style={{ border: "2px solid #1a1a1a", boxShadow: "6px 6px 0 #1a1a1a" }}>
-        <div className="p-8" style={{ background: "#2d4a2d" }}>
-          {post.category && (
-            <div className="text-xs font-black uppercase tracking-widest mb-3" style={{ color: "#7ab87a" }}>
-              // {post.category}
+        {/* Main article */}
+        <div className="flex-1 min-w-0">
+
+          {/* Green header block */}
+          <div className="mb-8" style={{ border: "2px solid #1a1a1a", boxShadow: "6px 6px 0 #1a1a1a" }}>
+            <div className="p-8" style={{ background: "#2d4a2d" }}>
+              {post.category && (
+                <div className="text-xs font-black uppercase tracking-widest mb-3" style={{ color: "#7ab87a" }}>
+                  // {post.category}
+                </div>
+              )}
+              <h1 className="leading-tight mb-4 text-white" style={{ fontSize: "2.25rem", fontFamily: "var(--font-fraunces)", fontWeight: 700 }}>
+                {post.title}
+              </h1>
+              {post.excerpt && (
+                <p className="text-base leading-relaxed mb-5" style={{ color: "#c8e6c8" }}>
+                  {post.excerpt}
+                </p>
+              )}
+              <div className="flex items-center gap-3 text-xs font-medium" style={{ color: "#7ab87a" }}>
+                {post.author && <span>{post.author}</span>}
+                {post.author && <span>·</span>}
+                <span>{new Date(post.date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</span>
+              </div>
+            </div>
+
+            {post.image && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={post.image}
+                alt={post.title}
+                className="w-full object-cover"
+                style={{ maxHeight: "420px", borderTop: "2px solid #1a1a1a", display: "block" }}
+              />
+            )}
+          </div>
+
+          {/* Key terms chips */}
+          {post.tags && post.tags.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-8">
+              {post.tags.map((tag: string) => (
+                <span key={tag} className="text-xs font-black uppercase tracking-widest px-3 py-1" style={{ border: "2px solid #2d4a2d", color: "#2d4a2d", background: "white" }}>
+                  {tag}
+                </span>
+              ))}
             </div>
           )}
-          <h1 className="leading-tight mb-4 text-white" style={{ fontSize: "2.25rem", fontFamily: "var(--font-fraunces)", fontWeight: 700 }}>
-            {post.title}
-          </h1>
-          {post.excerpt && (
-            <p className="text-base leading-relaxed mb-5" style={{ color: "#c8e6c8" }}>
-              {post.excerpt}
-            </p>
+
+          {/* Body */}
+          {post.body && (
+            <div>
+              <PortableText value={post.body} components={components} />
+            </div>
           )}
-          <div className="flex items-center gap-3 text-xs font-medium" style={{ color: "#7ab87a" }}>
-            {post.author && <span>{post.author}</span>}
-            {post.author && <span>·</span>}
-            <span>{new Date(post.date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</span>
+
+          <CommentSection slug={slug} comments={comments} hasAccess={hasAccess} />
+
+          <div className="mt-12 pt-8" style={{ borderTop: "2px solid #1a1a1a" }}>
+            <a href="/" className="text-xs font-black uppercase tracking-widest" style={{ color: "#1a1a1a" }}>
+              ← Back to all posts
+            </a>
           </div>
         </div>
 
-        {/* Cover image flush inside the card */}
-        {post.image && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={post.image}
-            alt={post.title}
-            className="w-full object-cover"
-            style={{ maxHeight: "420px", borderTop: "2px solid #1a1a1a", display: "block" }}
-          />
+        {/* Sidebar */}
+        {otherPosts.length > 0 && (
+          <div className="w-full lg:w-72 flex-shrink-0">
+            <div className="sticky top-6 overflow-hidden" style={{ border: "2px solid #1a1a1a", background: "white", boxShadow: "4px 4px 0 #1a1a1a" }}>
+              <div className="px-5 py-4" style={{ background: "#f0ece0", borderBottom: "2px solid #1a1a1a" }}>
+                <div className="text-xs font-black uppercase tracking-widest mb-0.5" style={{ color: "#2d4a2d" }}>// More Posts</div>
+                <h2 className="font-black text-sm uppercase tracking-wide" style={{ color: "#1a1a1a" }}>Keep Reading</h2>
+              </div>
+              <div className="divide-y" style={{ borderColor: "#e8e4d8" }}>
+                {otherPosts.map((p: { slug: string; title: string; excerpt?: string; date: string; category?: string; image?: string }) => (
+                  <Link key={p.slug} href={`/blog/${p.slug}`} className="block p-4 hover:bg-stone-50 transition-colors">
+                    {p.image && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={p.image} alt={p.title} className="w-full object-cover mb-3" style={{ height: "100px", border: "1px solid #1a1a1a" }} />
+                    )}
+                    {p.category && (
+                      <div className="text-xs font-black uppercase tracking-widest mb-1" style={{ color: "#2d4a2d" }}>// {p.category}</div>
+                    )}
+                    <div className="text-sm font-bold leading-snug mb-1" style={{ color: "#1a1a1a" }}>{p.title}</div>
+                    {p.excerpt && (
+                      <div className="text-xs leading-relaxed" style={{ color: "#6b6b6b" }}>{p.excerpt}</div>
+                    )}
+                    <div className="text-xs mt-2 font-medium" style={{ color: "#9a9a9a" }}>
+                      {new Date(p.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
         )}
-      </div>
-
-      {/* Key terms chips */}
-      {post.tags && post.tags.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-8">
-          {post.tags.map((tag: string) => (
-            <span key={tag} className="text-xs font-black uppercase tracking-widest px-3 py-1" style={{ border: "2px solid #2d4a2d", color: "#2d4a2d", background: "white" }}>
-              {tag}
-            </span>
-          ))}
-        </div>
-      )}
-
-      {/* Body */}
-      {post.body && (
-        <div>
-          <PortableText value={post.body} components={components} />
-        </div>
-      )}
-
-      <CommentSection slug={slug} comments={comments} hasAccess={hasAccess} />
-
-      {/* Back link */}
-      <div className="mt-12 pt-8" style={{ borderTop: "2px solid #1a1a1a" }}>
-        <a href="/" className="text-xs font-black uppercase tracking-widest" style={{ color: "#1a1a1a" }}>
-          ← Back to all posts
-        </a>
       </div>
     </div>
   );
