@@ -247,7 +247,7 @@ function WorkshopSidebar({ workshops }: { workshops: Workshop[] }) {
 
 function AboutSidebar({ settings }: { settings: SiteSettings | null }) {
   const title = settings?.aboutTitle ?? "About Us";
-  const body = settings?.aboutBody ?? "I'm a Meta and Salesforce engineer and educator, and now I teach AI in plain English.";
+  const body = settings?.aboutBody ?? "Before getting into tech, I was a high school educator. I've also taught coding classes at Berkeley Public Library. I'm a Meta and Salesforce engineer and educator, and now I teach AI in plain English.";
   const image = settings?.aboutImage ?? null;
   const linkLabel = settings?.aboutLinkLabel ?? null;
   const linkUrl = settings?.aboutLinkUrl ?? null;
