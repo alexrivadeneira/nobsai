@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { client } from "@/sanity/lib/client";
 import SurveyInline from "@/components/SurveyInline";
+import HeroCarousel, { type HeroSlide } from "@/components/HeroCarousel";
 
 export const revalidate = 60; // re-fetch from Sanity every 60 seconds
 
@@ -70,12 +71,6 @@ type SiteSettings = {
   aboutImage: string | null;
   aboutLinkLabel: string | null;
   aboutLinkUrl: string | null;
-  heroLabel: string | null;
-  heroHeadline: string | null;
-  heroSubtext: string | null;
-  heroLinkLabel: string | null;
-  heroLinkUrl: string | null;
-  heroImage: string | null;
 };
 
 async function getSiteSettings(): Promise<SiteSettings> {
@@ -85,20 +80,28 @@ async function getSiteSettings(): Promise<SiteSettings> {
       aboutBody,
       "aboutImage": aboutImage.asset->url,
       aboutLinkLabel,
-      aboutLinkUrl,
-      heroLabel,
-      heroHeadline,
-      heroSubtext,
-      heroLinkLabel,
-      heroLinkUrl,
-      "heroImage": heroImage.asset->url
+      aboutLinkUrl
+    }`
+  );
+}
+
+async function getHeroSlides(): Promise<HeroSlide[]> {
+  return client.fetch(
+    `*[_type == "heroSlide" && enabled != false] | order(order asc) {
+      _id,
+      label,
+      headline,
+      subtext,
+      linkLabel,
+      linkUrl,
+      "image": image.asset->url
     }`
   );
 }
 
 
 export default async function Home() {
-  const [posts, workshops, settings, links] = await Promise.all([getPosts(), getWorkshops(), getSiteSettings(), getReadingList()]);
+  const [posts, workshops, settings, links, heroSlides] = await Promise.all([getPosts(), getWorkshops(), getSiteSettings(), getReadingList(), getHeroSlides()]);
   return (
     <div className="max-w-6xl mx-auto px-6 py-12">
       <div className="mb-8 pb-4" style={{ borderBottom: "2px solid #1a1a1a" }}>
@@ -111,7 +114,7 @@ export default async function Home() {
       <div className="flex flex-col lg:flex-row gap-8">
         <div className="flex-1">
           <SurveyInline />
-          <Hero settings={settings} />
+          <HeroCarousel slides={heroSlides} />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 auto-rows-fr mt-6">
             {posts.map((post) => (
               <PostCard key={post.slug} post={post} />
@@ -132,35 +135,6 @@ export default async function Home() {
           <WorkshopSidebar workshops={workshops} />
           <ReadingListSidebar links={links} />
         </div>
-      </div>
-    </div>
-  );
-}
-
-function Hero({ settings }: { settings: SiteSettings | null }) {
-  const label = settings?.heroLabel ?? "Announcement";
-  const headline = settings?.heroHeadline ?? "New Workshop: AI for Business Owners — July 10–11 in NYC";
-  const subtext = settings?.heroSubtext ?? "Two days of hands-on AI training for founders and operators. No fluff — just tools you can use Monday morning.";
-  const linkLabel = settings?.heroLinkLabel ?? "Register now";
-  const linkUrl = settings?.heroLinkUrl ?? "/register";
-  const image = settings?.heroImage ?? "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1200&q=80";
-
-  return (
-    <div className="relative overflow-hidden" style={{ height: "clamp(280px, 50vw, 360px)", border: "2px solid #1a1a1a", boxShadow: "6px 6px 0px #1a1a1a" }}>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={image} alt={headline} className="w-full h-full object-cover" />
-      <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.2) 60%, transparent 100%)" }} />
-      <div className="absolute bottom-0 left-0 right-0 p-8">
-        <div className="text-xs font-black uppercase tracking-widest mb-3" style={{ color: "#7ab87a" }}>
-          // {label}
-        </div>
-        <h2 className="text-white text-2xl leading-snug mb-2" style={{ fontFamily: "var(--font-fraunces)", fontWeight: 700 }}>
-          {headline}
-        </h2>
-        <p className="text-sm" style={{ color: "rgba(255,255,255,0.8)" }}>
-          {subtext}{" "}
-          {linkLabel && <a href={linkUrl} className="underline font-bold text-white hover:opacity-80">{linkLabel} →</a>}
-        </p>
       </div>
     </div>
   );
