@@ -9,6 +9,13 @@ export const page = defineType({
     defineField({ name: "slug", title: "Slug (URL)", type: "slug", options: { source: "title" }, validation: (r) => r.required() }),
     defineField({ name: "subtitle", title: "Subtitle", type: "string" }),
     defineField({
+      name: "wide",
+      title: "Wide Layout",
+      type: "boolean",
+      description: "Use a wider content column — good for embeds and interactive content",
+      initialValue: false,
+    }),
+    defineField({
       name: "body",
       title: "Body",
       type: "array",

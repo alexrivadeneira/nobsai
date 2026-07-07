@@ -9,7 +9,7 @@ type Props = { params: Promise<{ slug: string }> };
 async function getPage(slug: string) {
   return client.fetch(
     `*[_type == "page" && slug.current == $slug][0] {
-      title, subtitle, body
+      title, subtitle, wide, body
     }`,
     { slug }
   );
@@ -60,7 +60,7 @@ export default async function Page({ params }: Props) {
   if (!page) notFound();
 
   return (
-    <div className="max-w-2xl mx-auto px-6 py-12">
+    <div className={`${page.wide ? "max-w-5xl" : "max-w-2xl"} mx-auto px-6 py-12`}>
       <div className="mb-8 pb-6" style={{ borderBottom: "2px solid #1a1a1a" }}>
         {page.subtitle && (
           <div className="text-xs font-black uppercase tracking-widest mb-2" style={{ color: "#2d4a2d" }}>
