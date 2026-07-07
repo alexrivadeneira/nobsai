@@ -13,6 +13,7 @@ type Post = {
   author: string;
   category: string;
   image: string | null;
+  href?: string;
 };
 
 type Workshop = {
@@ -65,6 +66,20 @@ async function getWorkshops(): Promise<Workshop[]> {
   );
 }
 
+async function getHomePages(): Promise<Post[]> {
+  const pages = await client.fetch(
+    `*[_type == "page" && showOnHome == true] {
+      "slug": slug.current,
+      title,
+      excerpt,
+      "date": _createdAt,
+      category,
+      "image": coverImage.asset->url
+    }`
+  );
+  return pages.map((p: Post) => ({ ...p, author: "", href: `/pages/${p.slug}` }));
+}
+
 type SiteSettings = {
   aboutTitle: string | null;
   aboutBody: string | null;
@@ -101,7 +116,8 @@ async function getHeroSlides(): Promise<HeroSlide[]> {
 
 
 export default async function Home() {
-  const [posts, workshops, settings, links, heroSlides] = await Promise.all([getPosts(), getWorkshops(), getSiteSettings(), getReadingList(), getHeroSlides()]);
+  const [posts, homePages, workshops, settings, links, heroSlides] = await Promise.all([getPosts(), getHomePages(), getWorkshops(), getSiteSettings(), getReadingList(), getHeroSlides()]);
+  const gridItems = [...posts, ...homePages].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   return (
     <div className="max-w-6xl mx-auto px-6 py-12">
       <div className="mb-8 pb-4" style={{ borderBottom: "2px solid #1a1a1a" }}>
@@ -116,8 +132,8 @@ export default async function Home() {
           <SurveyInline />
           <HeroCarousel slides={heroSlides} />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 auto-rows-fr mt-6">
-            {posts.map((post) => (
-              <PostCard key={post.slug} post={post} />
+            {gridItems.map((post) => (
+              <PostCard key={post.href ?? post.slug} post={post} />
             ))}
           </div>
         </div>
@@ -142,7 +158,7 @@ export default async function Home() {
 
 function PostCard({ post }: { post: Post }) {
   return (
-    <Link href={`/blog/${post.slug}`} className="block group h-full">
+    <Link href={post.href ?? `/blog/${post.slug}`} className="block group h-full">
       <div className="overflow-hidden h-full flex flex-col transition-all" style={{ border: "2px solid #1a1a1a", background: "white", boxShadow: "4px 4px 0px #1a1a1a" }}>
         <div className="h-44 overflow-hidden flex-shrink-0" style={{ background: "#d8d0c0", borderBottom: "2px solid #1a1a1a" }}>
           {post.image && (
