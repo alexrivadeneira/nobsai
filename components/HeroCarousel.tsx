@@ -48,41 +48,54 @@ export default function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
       aria-roledescription="carousel"
       aria-label="Featured announcements"
     >
-      {slides.map((slide, i) => (
-        <div
-          key={slide._id}
-          className="absolute inset-0 transition-opacity duration-500"
-          style={{ opacity: i === index ? 1 : 0, pointerEvents: i === index ? "auto" : "none" }}
-          aria-hidden={i !== index}
-        >
-          {slide.image && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={slide.image} alt={slide.headline} className="w-full h-full object-cover" />
-          )}
-          <div
-            className="absolute inset-0"
-            style={{ background: "linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.2) 60%, transparent 100%)" }}
-          />
-          <div className="absolute bottom-0 left-0 right-0 p-8 pb-10">
-            {slide.label && (
-              <div className="text-xs font-black uppercase tracking-widest mb-3" style={{ color: "#7ab87a" }}>
-                {"// "}{slide.label}
-              </div>
+      {slides.map((slide, i) => {
+        const inner = (
+          <>
+            {slide.image && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={slide.image} alt={slide.headline} className="w-full h-full object-cover" />
             )}
-            <h2 className="text-white text-2xl leading-snug mb-2" style={{ fontFamily: "var(--font-fraunces)", fontWeight: 700 }}>
-              {slide.headline}
-            </h2>
-            <p className="text-sm" style={{ color: "rgba(255,255,255,0.8)" }}>
-              {slide.subtext}{" "}
-              {slide.linkLabel && slide.linkUrl && (
-                <a href={slide.linkUrl} className="underline font-bold text-white hover:opacity-80">
-                  {slide.linkLabel} →
-                </a>
+            <div
+              className="absolute inset-0"
+              style={{ background: "linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.2) 60%, transparent 100%)" }}
+            />
+            <div className="absolute bottom-0 left-0 right-0 p-8 pb-10">
+              {slide.label && (
+                <div className="text-xs font-black uppercase tracking-widest mb-3" style={{ color: "#7ab87a" }}>
+                  {"// "}{slide.label}
+                </div>
               )}
-            </p>
+              <h2 className="text-white text-2xl leading-snug mb-2" style={{ fontFamily: "var(--font-fraunces)", fontWeight: 700 }}>
+                {slide.headline}
+              </h2>
+              <p className="text-sm" style={{ color: "rgba(255,255,255,0.8)" }}>
+                {slide.subtext}{" "}
+                {slide.linkLabel && slide.linkUrl && (
+                  <span className="underline font-bold text-white">
+                    {slide.linkLabel} →
+                  </span>
+                )}
+              </p>
+            </div>
+          </>
+        );
+        return (
+          <div
+            key={slide._id}
+            className="absolute inset-0 transition-opacity duration-500"
+            style={{ opacity: i === index ? 1 : 0, pointerEvents: i === index ? "auto" : "none" }}
+            aria-hidden={i !== index}
+          >
+            {slide.linkUrl ? (
+              <a href={slide.linkUrl} aria-label={slide.headline} className="block w-full h-full hover:opacity-95">
+                {inner}
+              </a>
+            ) : (
+              inner
+            )}
           </div>
-        </div>
-      ))}
+        );
+      })}
 
       {count > 1 && (
         <>
