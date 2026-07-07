@@ -30,6 +30,15 @@ function JoinForm() {
   const redirect = params.get("redirect") ?? DEFAULTS.redirect;
   const showGuide = params.get("guide") === "true";
 
+  // bullets param: absent = defaults, "false"/"none" = hidden, "a|b|c" = custom list
+  const bulletsParam = params.get("bullets");
+  const bullets =
+    bulletsParam === "false" || bulletsParam === "none"
+      ? []
+      : bulletsParam
+        ? bulletsParam.split("|").map((b) => b.trim()).filter(Boolean)
+        : DEFAULTS.bullets;
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setStatus("loading");
@@ -75,14 +84,16 @@ function JoinForm() {
           <div className="p-8">
             <p className="text-sm leading-relaxed mb-6" style={{ color: "#4a4a4a" }}>{body}</p>
 
-            <ul className="space-y-2 mb-8">
-              {DEFAULTS.bullets.map((item) => (
-                <li key={item} className="flex items-start gap-2 text-sm" style={{ color: "#2a2a2a" }}>
-                  <span className="font-black mt-0.5" style={{ color: "#2d4a2d" }}>→</span>
-                  {item}
-                </li>
-              ))}
-            </ul>
+            {bullets.length > 0 && (
+              <ul className="space-y-2 mb-8">
+                {bullets.map((item) => (
+                  <li key={item} className="flex items-start gap-2 text-sm" style={{ color: "#2a2a2a" }}>
+                    <span className="font-black mt-0.5" style={{ color: "#2d4a2d" }}>→</span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            )}
 
             <form onSubmit={handleSubmit} className="space-y-3">
               <input
