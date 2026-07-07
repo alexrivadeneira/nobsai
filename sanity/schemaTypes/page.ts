@@ -44,6 +44,13 @@ export const page = defineType({
       hidden: ({ document }) => !document?.showOnHome,
     }),
     defineField({
+      name: "ribbon",
+      title: "Ribbon Text (for homepage card)",
+      type: "string",
+      description: "Optional corner ribbon over the card, e.g. \"Interactive\" or \"Try it\". Leave empty for no ribbon.",
+      hidden: ({ document }) => !document?.showOnHome,
+    }),
+    defineField({
       name: "body",
       title: "Body",
       type: "array",

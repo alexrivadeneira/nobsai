@@ -14,6 +14,7 @@ type Post = {
   category: string;
   image: string | null;
   href?: string;
+  ribbon?: string | null;
 };
 
 type Workshop = {
@@ -74,6 +75,7 @@ async function getHomePages(): Promise<Post[]> {
       excerpt,
       "date": _createdAt,
       category,
+      ribbon,
       "image": coverImage.asset->url
     }`
   );
@@ -159,7 +161,24 @@ export default async function Home() {
 function PostCard({ post }: { post: Post }) {
   return (
     <Link href={post.href ?? `/blog/${post.slug}`} className="block group h-full">
-      <div className="overflow-hidden h-full flex flex-col transition-all" style={{ border: "2px solid #1a1a1a", background: "white", boxShadow: "4px 4px 0px #1a1a1a" }}>
+      <div className="relative overflow-hidden h-full flex flex-col transition-all" style={{ border: "2px solid #1a1a1a", background: "white", boxShadow: "4px 4px 0px #1a1a1a" }}>
+        {post.ribbon && (
+          <div
+            className="absolute z-10 text-center text-xs font-black uppercase tracking-widest text-white"
+            style={{
+              top: "22px",
+              right: "-38px",
+              width: "160px",
+              transform: "rotate(45deg)",
+              background: "#2d4a2d",
+              padding: "5px 0",
+              border: "1px solid #1a1a1a",
+              boxShadow: "0 2px 0 rgba(26,26,26,0.35)",
+            }}
+          >
+            {post.ribbon}
+          </div>
+        )}
         <div className="h-44 overflow-hidden flex-shrink-0" style={{ background: "#d8d0c0", borderBottom: "2px solid #1a1a1a" }}>
           {post.image && (
             // eslint-disable-next-line @next/next/no-img-element
