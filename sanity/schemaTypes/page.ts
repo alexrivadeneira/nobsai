@@ -39,6 +39,12 @@ export const page = defineType({
               type: "string",
               initialValue: "No spam. Unsubscribe anytime.",
             }),
+            defineField({
+              name: "tag",
+              title: "Mailchimp Tag",
+              type: "string",
+              description: "Optional. Tag applied to everyone who signs up here (including existing subscribers), e.g. workshop-july-9",
+            }),
           ],
           preview: {
             select: { subtitle: "redirect" },

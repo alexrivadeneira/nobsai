@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createHash } from "crypto";
 
 export async function POST(req: NextRequest) {
-  const { email, redirect } = await req.json();
+  const { email, redirect, tag } = await req.json();
 
   if (!email || !email.includes("@")) {
     return NextResponse.json({ error: "Valid email required" }, { status: 400 });
@@ -24,14 +25,32 @@ export async function POST(req: NextRequest) {
       Authorization: `apikey ${API_KEY}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ email_address: email, status: "subscribed" }),
+    body: JSON.stringify({
+      email_address: email,
+      status: "subscribed",
+      ...(tag ? { tags: [tag] } : {}),
+    }),
   });
 
   const data = await response.json();
-  const ok = response.ok || data.title === "Member Exists";
+  const memberExists = data.title === "Member Exists";
+  const ok = response.ok || memberExists;
 
   if (!ok) {
     return NextResponse.json({ error: data.detail ?? "Something went wrong" }, { status: 500 });
+  }
+
+  // Existing members don't get tags from the POST above — apply via the tags endpoint.
+  if (tag && memberExists) {
+    const subscriberHash = createHash("md5").update(email.toLowerCase()).digest("hex");
+    await fetch(`https://${datacenter}.api.mailchimp.com/3.0/lists/${AUDIENCE_ID}/members/${subscriberHash}/tags`, {
+      method: "POST",
+      headers: {
+        Authorization: `apikey ${API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ tags: [{ name: tag, status: "active" }] }),
+    });
   }
 
   const res = NextResponse.json({ success: true, redirect: redirect ?? "/" });

@@ -19,7 +19,7 @@ const components: PortableTextComponents = {
   types: {
     htmlEmbed: ({ value }) => <HtmlEmbed code={value?.code ?? ""} />,
     signupForm: ({ value }) => (
-      <SignupForm cta={value?.cta} redirect={value?.redirect ?? "/thanks"} note={value?.note} />
+      <SignupForm cta={value?.cta} redirect={value?.redirect ?? "/thanks"} note={value?.note} tag={value?.tag} />
     ),
   },
   block: {

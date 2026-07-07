@@ -6,9 +6,10 @@ type Props = {
   cta?: string | null;
   redirect: string;
   note?: string | null;
+  tag?: string | null;
 };
 
-export default function SignupForm({ cta, redirect, note }: Props) {
+export default function SignupForm({ cta, redirect, note, tag }: Props) {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [error, setError] = useState("");
@@ -21,7 +22,7 @@ export default function SignupForm({ cta, redirect, note }: Props) {
     const res = await fetch("/api/subscribe", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, redirect }),
+      body: JSON.stringify({ email, redirect, tag }),
     });
 
     const data = await res.json();
