@@ -2,6 +2,7 @@ import { client } from "@/sanity/lib/client";
 import { PortableText, PortableTextComponents } from "@portabletext/react";
 import { notFound } from "next/navigation";
 import HtmlEmbed from "@/components/HtmlEmbed";
+import SignupForm from "@/components/SignupForm";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -17,6 +18,9 @@ async function getPage(slug: string) {
 const components: PortableTextComponents = {
   types: {
     htmlEmbed: ({ value }) => <HtmlEmbed code={value?.code ?? ""} />,
+    signupForm: ({ value }) => (
+      <SignupForm cta={value?.cta} redirect={value?.redirect ?? "/thanks"} note={value?.note} />
+    ),
   },
   block: {
     normal: ({ children }) => (

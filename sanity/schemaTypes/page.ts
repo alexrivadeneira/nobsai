@@ -17,6 +17,39 @@ export const page = defineType({
         { type: "image", options: { hotspot: true } },
         {
           type: "object",
+          name: "signupForm",
+          title: "Signup Form",
+          fields: [
+            defineField({
+              name: "cta",
+              title: "Button Text",
+              type: "string",
+              initialValue: "Count me in →",
+            }),
+            defineField({
+              name: "redirect",
+              title: "Redirect After Signup",
+              type: "string",
+              description: "Where to send people after they sign up, e.g. /pages/thanks-jul7-meeting",
+              validation: (r) => r.required(),
+            }),
+            defineField({
+              name: "note",
+              title: "Note Under Button",
+              type: "string",
+              initialValue: "No spam. Unsubscribe anytime.",
+            }),
+          ],
+          preview: {
+            select: { subtitle: "redirect" },
+            prepare: ({ subtitle }: { subtitle?: string }) => ({
+              title: "Signup Form",
+              subtitle: subtitle ? `→ ${subtitle}` : "",
+            }),
+          },
+        },
+        {
+          type: "object",
           name: "htmlEmbed",
           title: "HTML Embed",
           fields: [
