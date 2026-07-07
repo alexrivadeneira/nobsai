@@ -1,6 +1,7 @@
 import { client } from "@/sanity/lib/client";
 import { PortableText, PortableTextComponents } from "@portabletext/react";
 import { notFound } from "next/navigation";
+import HtmlEmbed from "@/components/HtmlEmbed";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -14,6 +15,9 @@ async function getPage(slug: string) {
 }
 
 const components: PortableTextComponents = {
+  types: {
+    htmlEmbed: ({ value }) => <HtmlEmbed code={value?.code ?? ""} />,
+  },
   block: {
     normal: ({ children }) => (
       <p style={{ marginBottom: "1.5rem", lineHeight: "1.8", fontSize: "1.0625rem", color: "#2a2a2a" }}>{children}</p>

@@ -15,6 +15,33 @@ export const page = defineType({
       of: [
         { type: "block" },
         { type: "image", options: { hotspot: true } },
+        {
+          type: "object",
+          name: "htmlEmbed",
+          title: "HTML Embed",
+          fields: [
+            defineField({
+              name: "code",
+              title: "HTML / JavaScript",
+              type: "text",
+              rows: 10,
+              description: "Raw HTML and <script> tags. Runs unsanitized on the live page — only paste code you trust.",
+              validation: (r) => r.required(),
+            }),
+            defineField({
+              name: "note",
+              title: "Label (for your reference in the editor)",
+              type: "string",
+            }),
+          ],
+          preview: {
+            select: { title: "note", subtitle: "code" },
+            prepare: ({ title, subtitle }: { title?: string; subtitle?: string }) => ({
+              title: title || "HTML Embed",
+              subtitle: subtitle ? subtitle.slice(0, 60) : "",
+            }),
+          },
+        },
       ],
     }),
   ],
