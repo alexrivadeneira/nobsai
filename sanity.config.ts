@@ -9,6 +9,7 @@ export default defineConfig({
   title: "noBSAI",
   projectId: "sf46mco2",
   dataset: "production",
+  basePath: "/studio",
   plugins: [structureTool(), visionTool()],
   schema: { types: schemaTypes },
   document: {
