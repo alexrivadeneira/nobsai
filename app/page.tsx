@@ -102,6 +102,20 @@ async function getSiteSettings(): Promise<SiteSettings> {
   );
 }
 
+type DigestTeaser = {
+  date: string;
+  items: { _key: string; headline: string }[];
+} | null;
+
+async function getLatestDigest(): Promise<DigestTeaser> {
+  return client.fetch(
+    `*[_type == "digest"] | order(date desc) [0] {
+      date,
+      items[] { _key, headline }
+    }`
+  );
+}
+
 async function getHeroSlides(): Promise<HeroSlide[]> {
   return client.fetch(
     `*[_type == "heroSlide" && enabled != false] | order(order asc) {
@@ -118,7 +132,7 @@ async function getHeroSlides(): Promise<HeroSlide[]> {
 
 
 export default async function Home() {
-  const [posts, homePages, workshops, settings, links, heroSlides] = await Promise.all([getPosts(), getHomePages(), getWorkshops(), getSiteSettings(), getReadingList(), getHeroSlides()]);
+  const [posts, homePages, workshops, settings, links, heroSlides, digest] = await Promise.all([getPosts(), getHomePages(), getWorkshops(), getSiteSettings(), getReadingList(), getHeroSlides(), getLatestDigest()]);
   const gridItems = [...posts, ...homePages].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   return (
     <div className="max-w-6xl mx-auto px-6 py-12">
@@ -150,6 +164,7 @@ export default async function Home() {
             <img src="/guide-icon.png" alt="Free guide" style={{ width: "75%", objectFit: "contain" }} />
           </Link>
 
+          <DigestSidebar digest={digest} />
           <WorkshopSidebar workshops={workshops} />
           <ReadingListSidebar links={links} />
         </div>
@@ -285,6 +300,35 @@ function AboutSidebar({ settings }: { settings: SiteSettings | null }) {
             {linkLabel} →
           </Link>
         )}
+      </div>
+    </div>
+  );
+}
+
+function DigestSidebar({ digest }: { digest: DigestTeaser }) {
+  if (!digest || !digest.items?.length) return null;
+  const dateLabel = new Date(digest.date + "T12:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  return (
+    <div className="overflow-hidden" style={{ border: "2px solid #1a1a1a", background: "white", boxShadow: "4px 4px 0px #1a1a1a" }}>
+      <div className="px-5 py-4" style={{ background: "#2d4a2d", borderBottom: "2px solid #1a1a1a" }}>
+        <div className="text-xs font-black uppercase tracking-widest mb-1" style={{ color: "#7ab87a" }}>// {dateLabel}</div>
+        <h2 className="text-white font-black text-sm uppercase tracking-wide">Today in AI</h2>
+      </div>
+      <ul className="px-5 py-3 divide-y" style={{ borderColor: "#e8e4d8" }}>
+        {digest.items.slice(0, 3).map((item) => (
+          <li key={item._key} className="py-2 text-sm font-bold leading-snug" style={{ color: "#1a1a1a" }}>
+            {item.headline}
+          </li>
+        ))}
+      </ul>
+      <div className="px-5 pb-4">
+        <Link
+          href="/digest"
+          className="inline-block text-xs font-black uppercase px-3 py-1.5"
+          style={{ border: "2px solid #1a1a1a", color: "#1a1a1a", boxShadow: "2px 2px 0px #1a1a1a" }}
+        >
+          Read the full digest →
+        </Link>
       </div>
     </div>
   );

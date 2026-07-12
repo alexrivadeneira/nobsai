@@ -6,5 +6,6 @@ import { page } from "./page";
 import { comment } from "./comment";
 import { readingList } from "./readingList";
 import { heroSlide } from "./heroSlide";
+import { digest } from "./digest";
 
-export const schemaTypes = [post, workshop, siteSettings, video, page, comment, readingList, heroSlide];
+export const schemaTypes = [post, workshop, siteSettings, video, page, comment, readingList, heroSlide, digest];
