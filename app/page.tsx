@@ -2,6 +2,7 @@ import Link from "next/link";
 import { client } from "@/sanity/lib/client";
 import SurveyInline from "@/components/SurveyInline";
 import HeroCarousel, { type HeroSlide } from "@/components/HeroCarousel";
+import AskProblemForm from "@/components/AskProblemForm";
 
 export const revalidate = 60; // re-fetch from Sanity every 60 seconds
 
@@ -82,26 +83,6 @@ async function getHomePages(): Promise<Post[]> {
   return pages.map((p: Post) => ({ ...p, author: "", href: `/pages/${p.slug}` }));
 }
 
-type SiteSettings = {
-  aboutTitle: string | null;
-  aboutBody: string | null;
-  aboutImage: string | null;
-  aboutLinkLabel: string | null;
-  aboutLinkUrl: string | null;
-};
-
-async function getSiteSettings(): Promise<SiteSettings> {
-  return client.fetch(
-    `*[_type == "siteSettings"][0] {
-      aboutTitle,
-      aboutBody,
-      "aboutImage": aboutImage.asset->url,
-      aboutLinkLabel,
-      aboutLinkUrl
-    }`
-  );
-}
-
 type DigestTeaser = {
   date: string;
   items: { _key: string; headline: string }[];
@@ -112,6 +93,22 @@ async function getLatestDigest(): Promise<DigestTeaser> {
     `*[_type == "digest"] | order(date desc) [0] {
       date,
       items[] { _key, headline }
+    }`
+  );
+}
+
+type AnsweredQuestion = {
+  _id: string;
+  displayQuestion: string | null;
+  question: string;
+  answerLabel: string | null;
+  answerUrl: string | null;
+};
+
+async function getAnsweredQuestions(): Promise<AnsweredQuestion[]> {
+  return client.fetch(
+    `*[_type == "aiQuestion" && answered == true] | order(submittedAt desc) [0...3] {
+      _id, displayQuestion, question, answerLabel, answerUrl
     }`
   );
 }
@@ -132,10 +129,13 @@ async function getHeroSlides(): Promise<HeroSlide[]> {
 
 
 export default async function Home() {
-  const [posts, homePages, workshops, settings, links, heroSlides, digest] = await Promise.all([getPosts(), getHomePages(), getWorkshops(), getSiteSettings(), getReadingList(), getHeroSlides(), getLatestDigest()]);
+  const [posts, homePages, workshops, links, heroSlides, digest, answeredQuestions] = await Promise.all([getPosts(), getHomePages(), getWorkshops(), getReadingList(), getHeroSlides(), getLatestDigest(), getAnsweredQuestions()]);
   const gridItems = [...posts, ...homePages].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   return (
+    <>
     <div className="max-w-6xl mx-auto px-6 py-12">
+      <HeroSection />
+
       <div className="mb-8 pb-4" style={{ borderBottom: "2px solid #1a1a1a" }}>
         <div className="text-xs font-black uppercase tracking-widest mb-1" style={{ color: "#2d4a2d" }}>// Latest</div>
         <h1 className="text-4xl font-black uppercase tracking-tight" style={{ color: "#1a1a1a" }}>
@@ -155,8 +155,6 @@ export default async function Home() {
         </div>
 
         <div className="w-full lg:w-80 flex-shrink-0 space-y-6">
-          <AboutSidebar settings={settings} />
-
           <Link href="/join?guide=true" className="flex flex-col items-center gap-1 group">
             <div className="text-sm font-black uppercase leading-snug group-hover:underline text-center" style={{ color: "#1a1a1a", textUnderlineOffset: "3px" }}>
               Get the free resource: Explain AI to Anyone →
@@ -168,6 +166,103 @@ export default async function Home() {
           <WorkshopSidebar workshops={workshops} />
           <ReadingListSidebar links={links} />
         </div>
+      </div>
+    </div>
+    <AskSection answeredQuestions={answeredQuestions} />
+    </>
+  );
+}
+
+function AskSection({ answeredQuestions }: { answeredQuestions: AnsweredQuestion[] }) {
+  return (
+    <section id="ask" className="w-full" style={{ background: "#1e3a26", borderTop: "2px solid #1a1a1a", borderBottom: "2px solid #1a1a1a" }}>
+      <div className="max-w-6xl mx-auto px-6 py-14">
+        <div className="text-xs font-black uppercase tracking-widest mb-2" style={{ color: "#e8a33d" }}>// Ask</div>
+        <h2 className="text-3xl md:text-4xl mb-3" style={{ color: "#f5f0e8", fontFamily: "var(--font-fraunces)", fontWeight: 900, letterSpacing: "0.02em", textTransform: "uppercase" }}>
+          Ask Me Your AI Problem
+        </h2>
+        <p className="text-base leading-relaxed mb-8 max-w-xl" style={{ color: "#d8d0c0", fontFamily: "var(--font-fraunces)" }}>
+          Got a task you suspect AI could do &mdash; but don&apos;t know where to start? Describe it. I answer every one.
+        </p>
+
+        <div className="flex flex-col lg:flex-row gap-10">
+          <div className="flex-1 max-w-xl">
+            <AskProblemForm />
+          </div>
+
+          <div className="flex-1 space-y-6">
+            <ul className="space-y-4">
+              {[
+                "Quick ones get answered in the daily digest",
+                "Meaty ones become a full walkthrough post",
+                "The best ones get built live at Saturday office hours",
+              ].map((item) => (
+                <li key={item} className="flex items-start gap-3 text-base" style={{ color: "#f5f0e8", fontFamily: "var(--font-fraunces)" }}>
+                  <span aria-hidden style={{ color: "#e8a33d" }}>&rarr;</span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+
+            {answeredQuestions.length > 0 && (
+              <div className="p-5" style={{ border: "2px solid #e8a33d", background: "#16301d" }}>
+                <div className="text-xs font-black uppercase tracking-widest mb-3" style={{ color: "#e8a33d" }}>Recently Answered</div>
+                <div className="space-y-3">
+                  {answeredQuestions.map((q) => (
+                    <p key={q._id} className="text-sm leading-relaxed" style={{ color: "#f5f0e8", fontFamily: "var(--font-fraunces)" }}>
+                      &ldquo;{q.displayQuestion ?? q.question}&rdquo; &rarr;{" "}
+                      {q.answerUrl ? (
+                        <a href={q.answerUrl} className="underline" style={{ textUnderlineOffset: "3px" }}>
+                          {q.answerLabel ?? "Read the answer"}
+                        </a>
+                      ) : (
+                        <span>{q.answerLabel}</span>
+                      )}
+                    </p>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function HeroSection() {
+  const highlight = {
+    color: "#2d4a2d",
+    boxShadow: "inset 0 -0.18em 0 0 #e8a33d",
+    paddingBottom: "0.06em",
+  };
+  return (
+    <div className="mb-12 py-10">
+      <h1
+        className="text-4xl md:text-5xl leading-tight mb-6 max-w-3xl"
+        style={{ color: "#1a1a1a", fontFamily: "var(--font-fraunces)", fontWeight: 900 }}
+      >
+        Go from AI-curious to <span style={highlight}>running your own agents</span>. No code. No hype.
+      </h1>
+      <p className="text-lg leading-relaxed mb-8 max-w-xl" style={{ color: "#4a4a4a", fontFamily: "var(--font-fraunces)", fontWeight: 400 }}>
+        A step-by-step path, live help every Saturday, and plain-English answers to your actual
+        questions &mdash; from someone who&apos;s taught real people, not just written about it.
+      </p>
+      <div className="flex flex-wrap gap-4">
+        <Link
+          href="#"
+          className="text-sm font-black px-6 py-3"
+          style={{ background: "#e8a33d", color: "#1a1a1a", border: "2px solid #1a1a1a", boxShadow: "4px 4px 0px #1a1a1a", fontFamily: "monospace" }}
+        >
+          Start the path &rarr;
+        </Link>
+        <Link
+          href="#ask"
+          className="text-sm font-black px-6 py-3"
+          style={{ background: "#f0ece0", color: "#1a1a1a", border: "2px solid #1a1a1a", boxShadow: "4px 4px 0px #1a1a1a", fontFamily: "monospace" }}
+        >
+          Ask me your AI problem
+        </Link>
       </div>
     </div>
   );
@@ -265,42 +360,6 @@ function WorkshopSidebar({ workshops }: { workshops: Workshop[] }) {
           ))}
         </div>
       )}
-    </div>
-  );
-}
-
-function AboutSidebar({ settings }: { settings: SiteSettings | null }) {
-  const title = settings?.aboutTitle ?? "About Us";
-  const body = settings?.aboutBody ?? "Before getting into tech, I was a high school educator. I've also taught coding classes at Berkeley Public Library. I'm a Meta and Salesforce engineer and educator, and now I teach AI in plain English.";
-  const image = settings?.aboutImage ?? null;
-  const linkLabel = settings?.aboutLinkLabel ?? null;
-  const linkUrl = settings?.aboutLinkUrl ?? null;
-
-  return (
-    <div className="overflow-hidden" style={{ border: "2px solid #1a1a1a", background: "white", boxShadow: "4px 4px 0px #1a1a1a" }}>
-      <div className="px-5 py-4" style={{ background: "#f0ece0", borderBottom: "2px solid #1a1a1a" }}>
-        <div className="text-xs font-black uppercase tracking-widest mb-0.5" style={{ color: "#2d4a2d" }}>// About</div>
-        <h2 className="font-black text-sm uppercase tracking-wide" style={{ color: "#1a1a1a" }}>{title}</h2>
-      </div>
-      <div className="p-4">
-        {image && (
-          <div className="overflow-hidden mb-3" style={{ height: "140px", border: "2px solid #1a1a1a" }}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={image} alt={title} className="w-full h-full object-cover object-top" />
-          </div>
-        )}
-        <p className="text-sm leading-relaxed mb-4" style={{ color: "#4a4a4a" }}>{body}</p>
-        <img src="/creds.png" alt="Meta and Salesforce" className="w-full object-contain mb-4" />
-        {linkLabel && linkUrl && (
-          <Link
-            href={linkUrl}
-            className="inline-block text-xs font-black uppercase px-4 py-2"
-            style={{ border: "2px solid #1a1a1a", color: "#1a1a1a", boxShadow: "2px 2px 0px #1a1a1a" }}
-          >
-            {linkLabel} →
-          </Link>
-        )}
-      </div>
     </div>
   );
 }
