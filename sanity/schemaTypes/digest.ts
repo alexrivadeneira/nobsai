@@ -12,6 +12,12 @@ export const digest = defineType({
       validation: (r) => r.required(),
     }),
     defineField({
+      name: "caption",
+      title: "Caption (one-line headline of the big picture)",
+      type: "string",
+      description: "The highest-level summary of the day — used as the digest headline.",
+    }),
+    defineField({
       name: "topSummary",
       title: "The Big Picture (max 3 sentences)",
       type: "text",

@@ -85,6 +85,7 @@ async function getHomePages(): Promise<Post[]> {
 
 type DigestTeaser = {
   date: string;
+  caption: string | null;
   topSummary: string | null;
   items: { _key: string; headline: string }[];
 } | null;
@@ -93,6 +94,7 @@ async function getLatestDigest(): Promise<DigestTeaser> {
   return client.fetch(
     `*[_type == "digest"] | order(date desc) [0] {
       date,
+      caption,
       topSummary,
       items[] { _key, headline }
     }`
@@ -427,33 +429,101 @@ function WorkshopSidebar({ workshops }: { workshops: Workshop[] }) {
 
 function DigestSidebar({ digest }: { digest: DigestTeaser }) {
   if (!digest || !digest.items?.length) return null;
-  const dateLabel = new Date(digest.date + "T12:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  const dateLabel = new Date(digest.date + "T12:00:00").toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+  const fraunces = "var(--font-fraunces)";
+  const headline = digest.caption ?? digest.items[0]?.headline;
+  const lead = digest.topSummary;
+  const leadFirst = lead ? lead.charAt(0) : "";
+  const leadRest = lead ? lead.slice(1) : "";
   return (
-    <div className="overflow-hidden" style={{ border: "2px solid #1a1a1a", background: "white", boxShadow: "4px 4px 0px #1a1a1a" }}>
-      <div className="px-5 py-4" style={{ background: "#2d4a2d", borderBottom: "2px solid #1a1a1a" }}>
-        <div className="text-xs font-black uppercase tracking-widest mb-1" style={{ color: "#7ab87a" }}>// {dateLabel}</div>
-        <h2 className="text-white font-black text-sm uppercase tracking-wide">Today in AI</h2>
-      </div>
-      {digest.topSummary && (
-        <p className="px-5 pt-3 text-sm leading-relaxed" style={{ color: "#4a4a4a", fontFamily: "var(--font-fraunces)" }}>
-          {digest.topSummary}
-        </p>
-      )}
-      <ul className="px-5 py-3 divide-y" style={{ borderColor: "#e8e4d8" }}>
-        {digest.items.slice(0, 3).map((item) => (
-          <li key={item._key} className="py-2 text-sm font-bold leading-snug" style={{ color: "#1a1a1a" }}>
-            {item.headline}
-          </li>
-        ))}
-      </ul>
-      <div className="px-5 pb-4">
-        <Link
-          href="/digest"
-          className="btn-press inline-block text-xs font-black uppercase px-3 py-1.5"
-          style={{ border: "2px solid #1a1a1a", color: "#1a1a1a", boxShadow: "2px 2px 0px #1a1a1a" }}
+    <div style={{ border: "2px solid #1a1a1a", background: "#faf7ef", boxShadow: "4px 4px 0px #1a1a1a" }}>
+      {/* Masthead */}
+      <div className="px-4 pt-4 pb-3" style={{ borderBottom: "1px solid #1a1a1a" }}>
+        <div className="flex items-center justify-center gap-2">
+          <span style={{ flex: 1, height: 1, background: "#1a1a1a" }} />
+          <h2
+            className="text-center whitespace-nowrap"
+            style={{ fontFamily: fraunces, fontWeight: 900, fontSize: "1.15rem", letterSpacing: "0.02em", color: "#1a1a1a" }}
+          >
+            <Link href="/digest" style={{ color: "inherit", textDecoration: "none" }}>
+              The Daily Digest
+            </Link>
+          </h2>
+          <span style={{ flex: 1, height: 1, background: "#1a1a1a" }} />
+        </div>
+        <div
+          className="text-center mt-2"
+          style={{ fontSize: "9px", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#2d4a2d", lineHeight: 1.6 }}
         >
-          Read the full digest →
-        </Link>
+          {dateLabel}
+          <br />
+          Updated every morning &nbsp;·&nbsp; No hype
+        </div>
+      </div>
+
+      {/* Lead story */}
+      <div className="px-4 pt-3 pb-4">
+        {headline && (
+          <h3
+            className="mb-2"
+            style={{ fontFamily: fraunces, fontWeight: 800, fontSize: "1.3rem", lineHeight: 1.1, color: "#1a1a1a" }}
+          >
+            {headline}
+          </h3>
+        )}
+        {lead ? (
+          <p style={{ fontFamily: fraunces, fontSize: "0.9rem", lineHeight: 1.55, color: "#2a2a2a", textAlign: "justify" }}>
+            <span
+              style={{
+                float: "left",
+                fontFamily: fraunces,
+                fontWeight: 900,
+                fontSize: "2.75rem",
+                lineHeight: 0.82,
+                paddingRight: "0.35rem",
+                paddingTop: "0.1rem",
+                color: "#2d4a2d",
+              }}
+            >
+              {leadFirst}
+            </span>
+            {leadRest}
+          </p>
+        ) : (
+          <ul className="divide-y" style={{ borderColor: "#e0d9c8" }}>
+            {digest.items.slice(1, 4).map((item) => (
+              <li key={item._key} className="py-2 leading-snug" style={{ fontFamily: fraunces, fontWeight: 700, fontSize: "0.9rem", color: "#1a1a1a" }}>
+                {item.headline}
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {/* Daily illustration */}
+        <div className="mt-4" style={{ clear: "both" }}>
+          <div className="mb-3 text-center">
+            <Link
+              href="/digest"
+              className="hover:underline"
+              style={{ fontSize: "10px", fontWeight: 800, letterSpacing: "0.08em", textTransform: "uppercase", color: "#1a1a1a", textUnderlineOffset: "3px" }}
+            >
+              Read the full digest →
+            </Link>
+          </div>
+          <Link href="/digest" style={{ display: "block", textDecoration: "none" }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/news.png"
+              alt="Today's illustration"
+              style={{ display: "block", width: "100%", height: "auto", border: "2px solid #1a1a1a" }}
+            />
+          </Link>
+        </div>
       </div>
     </div>
   );
