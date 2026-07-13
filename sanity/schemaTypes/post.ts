@@ -1,4 +1,5 @@
 import { defineField, defineType } from "sanity";
+import { vocabBlockMarks } from "./vocabTerm";
 
 export const post = defineType({
   name: "post",
@@ -18,7 +19,7 @@ export const post = defineType({
       title: "Body",
       type: "array",
       of: [
-        { type: "block" },
+        { type: "block", marks: vocabBlockMarks },
         { type: "image", options: { hotspot: true } },
         {
           type: "object",
