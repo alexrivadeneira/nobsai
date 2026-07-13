@@ -6,14 +6,14 @@ type Video = {
   _id: string;
   title: string;
   description: string | null;
-  vimeoId: string;
+  bunnyVideoId: string;
   publishedAt: string | null;
 };
 
 async function getVideos(): Promise<Video[]> {
   return client.fetch(
     `*[_type == "video"] | order(publishedAt desc) {
-      _id, title, description, vimeoId, publishedAt
+      _id, title, description, bunnyVideoId, publishedAt
     }`
   );
 }
@@ -37,13 +37,14 @@ export default async function VideosPage() {
         <div className="space-y-12">
           {videos.map((v) => (
             <div key={v._id} style={{ border: "2px solid #1a1a1a", background: "white", boxShadow: "4px 4px 0 #1a1a1a" }}>
-              {/* 16:9 Vimeo embed */}
+              {/* 16:9 Bunny Stream embed */}
               <div style={{ padding: "56.25% 0 0 0", position: "relative", borderBottom: "2px solid #1a1a1a" }}>
                 <iframe
-                  src={`https://player.vimeo.com/video/${v.vimeoId}?badge=0&autopause=0&player_id=0&app_id=58479`}
-                  frameBorder="0"
-                  allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media"
-                  style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
+                  src={`https://iframe.mediadelivery.net/embed/${process.env.NEXT_PUBLIC_BUNNY_LIBRARY_ID}/${v.bunnyVideoId}?autoplay=false&loop=false&muted=false&preload=true&responsive=true`}
+                  loading="lazy"
+                  allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
+                  allowFullScreen
+                  style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: 0 }}
                   title={v.title}
                 />
               </div>

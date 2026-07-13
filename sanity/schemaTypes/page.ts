@@ -99,6 +99,27 @@ export const page = defineType({
         },
         {
           type: "object",
+          name: "bunnyEmbed",
+          title: "Bunny Video",
+          fields: [
+            defineField({
+              name: "videoId",
+              title: "Bunny Video ID",
+              type: "string",
+              description: "The video's GUID from Bunny Stream, e.g. 8b1e...  (found in the video's page or embed URL)",
+            }),
+            defineField({ name: "caption", title: "Caption (optional)", type: "string" }),
+          ],
+          preview: {
+            select: { title: "videoId", subtitle: "caption" },
+            prepare: ({ title, subtitle }: { title?: string; subtitle?: string }) => ({
+              title: subtitle || "Bunny Video",
+              subtitle: title ?? "",
+            }),
+          },
+        },
+        {
+          type: "object",
           name: "htmlEmbed",
           title: "HTML Embed",
           fields: [
