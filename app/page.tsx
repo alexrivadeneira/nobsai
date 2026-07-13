@@ -454,7 +454,7 @@ function PathSection({ steps }: { steps: PathStep[] }) {
       <div className="text-xs font-black uppercase tracking-widest mb-1" style={{ color: "#2d4a2d" }}>// Start here</div>
       <h2 className="text-4xl font-black uppercase tracking-tight mb-3" style={{ color: "#1a1a1a" }}>The Path</h2>
       <p className="text-base leading-relaxed mb-6 max-w-2xl" style={{ color: "#4a4a4a", fontFamily: "var(--font-fraunces)" }}>
-        Five short lessons, in order. Each one ends with something real working on your computer. Most people finish a step in under 30 minutes.
+        Five short lessons.
       </p>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         {steps.map((step) => (
