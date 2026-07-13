@@ -176,7 +176,7 @@ export default function HowToExplainAI() {
 
         <div className="space-y-5 text-sm leading-relaxed" style={{ color: "#2a2a2a" }}>
           <p>
-            ChatGPT is a software application <em>wrapped around</em> an LLM. Before your message ever reaches the model, ChatGPT intercepts it and loads it up with extra context.
+            ChatGPT is a software application (an AI chatbot) <em>wrapped around</em> an LLM. Before your message ever reaches the model, ChatGPT intercepts it and loads it up with extra context.
           </p>
 
           <div className="my-6 flex gap-6 items-start flex-wrap">

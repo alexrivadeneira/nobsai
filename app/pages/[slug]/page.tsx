@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import HtmlEmbed from "@/components/HtmlEmbed";
 import SignupForm from "@/components/SignupForm";
 import VocabTerm from "@/components/VocabTerm";
+import BunnyVideo from "@/components/BunnyVideo";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -31,6 +32,7 @@ async function getPage(slug: string) {
 const components: PortableTextComponents = {
   types: {
     htmlEmbed: ({ value }) => <HtmlEmbed code={value?.code ?? ""} />,
+    bunnyEmbed: ({ value }) => <BunnyVideo videoId={value?.videoId} caption={value?.caption} />,
     signupForm: ({ value }) => (
       <SignupForm cta={value?.cta} redirect={value?.redirect ?? "/thanks"} note={value?.note} tag={value?.tag} />
     ),

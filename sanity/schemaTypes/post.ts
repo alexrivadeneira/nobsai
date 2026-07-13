@@ -23,15 +23,15 @@ export const post = defineType({
         { type: "image", options: { hotspot: true } },
         {
           type: "object",
-          name: "vimeoEmbed",
-          title: "Vimeo Video",
+          name: "bunnyEmbed",
+          title: "Bunny Video",
           fields: [
-            { name: "vimeoId", title: "Vimeo Video ID", type: "string", description: "The number at the end of the Vimeo URL, e.g. 1203899292" },
+            { name: "videoId", title: "Bunny Video ID", type: "string", description: "The video's GUID from Bunny Stream, e.g. 8b1e...  (found in the video's page or embed URL)" },
             { name: "caption", title: "Caption (optional)", type: "string" },
           ],
           preview: {
-            select: { title: "vimeoId" },
-            prepare: ({ title }: { title?: string }) => ({ title: `Vimeo: ${title ?? ""}` }),
+            select: { title: "videoId", subtitle: "caption" },
+            prepare: ({ title, subtitle }: { title?: string; subtitle?: string }) => ({ title: subtitle || "Bunny Video", subtitle: title ?? "" }),
           },
         },
       ],
