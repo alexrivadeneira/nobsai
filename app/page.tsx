@@ -159,6 +159,8 @@ export default async function Home() {
         </div>
 
         <div className="w-full lg:w-80 flex-shrink-0 space-y-6">
+          <DigestSidebar digest={digest} />
+
           <Link href="/join?guide=true" className="flex flex-col items-center gap-1 group">
             <div className="text-sm font-black uppercase leading-snug group-hover:underline text-center" style={{ color: "#1a1a1a", textUnderlineOffset: "3px" }}>
               Get the free resource: Explain AI to Anyone →
@@ -166,7 +168,6 @@ export default async function Home() {
             <img src="/guide-icon.png" alt="Free guide" style={{ width: "75%", objectFit: "contain" }} />
           </Link>
 
-          <DigestSidebar digest={digest} />
           <WorkshopSidebar workshops={workshops} />
           <ReadingListSidebar links={links} />
         </div>
