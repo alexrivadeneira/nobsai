@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
 import Link from "next/link";
 import CommentSection from "./CommentSection";
+import VocabTerm from "@/components/VocabTerm";
 import type { Metadata } from "next";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -43,7 +44,17 @@ async function getPost(slug: string) {
       tags,
       "image": coverImage.asset->url,
       gated,
-      body
+      body[]{
+        ...,
+        markDefs[]{
+          ...,
+          _type == "vocab" => {
+            "termName": term->term,
+            "definition": term->definition,
+            "moreUrl": term->learnMoreUrl
+          }
+        }
+      }
     }`,
     { slug }
   );
@@ -111,6 +122,11 @@ function makeComponents(): PortableTextComponents {
     code: ({ children }) => <code style={{ fontFamily: "monospace", fontSize: "0.9em", background: "#e8e4d8", border: "1px solid #c8c4b8", borderRadius: "3px", padding: "0.1em 0.4em" }}>{children}</code>,
     link: ({ value, children }) => (
       <a href={value?.href} style={{ color: "#2d4a2d", textDecoration: "underline", fontWeight: 600 }} target="_blank" rel="noopener noreferrer">{children}</a>
+    ),
+    vocab: ({ value, children }) => (
+      <VocabTerm term={value?.termName} definition={value?.definition} moreUrl={value?.moreUrl}>
+        {children}
+      </VocabTerm>
     ),
   },
   list: {

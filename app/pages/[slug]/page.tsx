@@ -3,13 +3,25 @@ import { PortableText, PortableTextComponents } from "@portabletext/react";
 import { notFound } from "next/navigation";
 import HtmlEmbed from "@/components/HtmlEmbed";
 import SignupForm from "@/components/SignupForm";
+import VocabTerm from "@/components/VocabTerm";
 
 type Props = { params: Promise<{ slug: string }> };
 
 async function getPage(slug: string) {
   return client.fetch(
     `*[_type == "page" && slug.current == $slug][0] {
-      title, subtitle, wide, body
+      title, subtitle, wide,
+      body[]{
+        ...,
+        markDefs[]{
+          ...,
+          _type == "vocab" => {
+            "termName": term->term,
+            "definition": term->definition,
+            "moreUrl": term->learnMoreUrl
+          }
+        }
+      }
     }`,
     { slug }
   );
@@ -41,6 +53,11 @@ const components: PortableTextComponents = {
     em: ({ children }) => <em>{children}</em>,
     link: ({ value, children }) => (
       <a href={value?.href} style={{ color: "#2d4a2d", textDecoration: "underline", fontWeight: 600 }} target="_blank" rel="noopener noreferrer">{children}</a>
+    ),
+    vocab: ({ value, children }) => (
+      <VocabTerm term={value?.termName} definition={value?.definition} moreUrl={value?.moreUrl}>
+        {children}
+      </VocabTerm>
     ),
   },
   list: {
