@@ -13,6 +13,7 @@ async function getPage(slug: string) {
       title, subtitle, wide,
       body[]{
         ...,
+        _type == "image" => { "imageUrl": asset->url },
         markDefs[]{
           ...,
           _type == "vocab" => {
@@ -33,6 +34,15 @@ const components: PortableTextComponents = {
     signupForm: ({ value }) => (
       <SignupForm cta={value?.cta} redirect={value?.redirect ?? "/thanks"} note={value?.note} tag={value?.tag} />
     ),
+    image: ({ value }) =>
+      value?.imageUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={value.imageUrl}
+          alt={value?.alt ?? ""}
+          style={{ display: "block", maxWidth: "100%", margin: "2rem auto", border: "2px solid #1a1a1a", boxShadow: "4px 4px 0 #1a1a1a" }}
+        />
+      ) : null,
   },
   block: {
     normal: ({ children }) => (

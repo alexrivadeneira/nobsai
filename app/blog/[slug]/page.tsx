@@ -46,6 +46,7 @@ async function getPost(slug: string) {
       gated,
       body[]{
         ...,
+        _type == "image" => { "imageUrl": asset->url },
         markDefs[]{
           ...,
           _type == "vocab" => {
@@ -142,6 +143,15 @@ function makeComponents(): PortableTextComponents {
     number: ({ children }) => <li style={{ marginBottom: "0.5rem", lineHeight: "1.7", color: "#2a2a2a" }}>{children}</li>,
   },
     types: {
+      image: ({ value }: { value: { imageUrl?: string; alt?: string } }) =>
+        value?.imageUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={value.imageUrl}
+            alt={value?.alt ?? ""}
+            style={{ display: "block", maxWidth: "100%", margin: "2rem auto", border: "2px solid #1a1a1a", boxShadow: "4px 4px 0 #1a1a1a" }}
+          />
+        ) : null,
       vimeoEmbed: ({ value }: { value: { vimeoId: string; caption?: string } }) => (
         <div style={{ margin: "2rem 0" }}>
           <div style={{ position: "relative", paddingBottom: "56.25%", height: 0, border: "2px solid #1a1a1a", boxShadow: "4px 4px 0 #1a1a1a" }}>
