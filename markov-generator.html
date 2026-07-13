@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Baby LLM — Markov Chain Text Generator</title>
+<style>
+  :root {
+    --cream: #f0ece0;
+    --ink: #1e2a22;
+    --green: #1e3a2a;
+    --gold: #c9992e;
+    --card: #faf7ef;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: Georgia, 'Times New Roman', serif;
+    background: var(--cream);
+    color: var(--ink);
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 32px 20px 60px;
+    line-height: 1.55;
+  }
+  h1 {
+    font-size: 2rem;
+    color: var(--green);
+    margin-bottom: 4px;
+    letter-spacing: 0.5px;
+  }
+  .subtitle { margin-top: 0; font-style: italic; opacity: 0.75; }
+  label {
+    display: block;
+    font-weight: bold;
+    margin: 22px 0 6px;
+    color: var(--green);
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  textarea {
+    width: 100%;
+    height: 180px;
+    padding: 12px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    border: 2px solid var(--green);
+    border-radius: 6px;
+    background: var(--card);
+    resize: vertical;
+  }
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 18px;
+  }
+  button {
+    background: var(--green);
+    color: var(--cream);
+    border: none;
+    padding: 12px 28px;
+    font-family: inherit;
+    font-size: 1.05rem;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: 3px 3px 0 var(--gold);
+  }
+  button:hover { background: #2c5540; }
+  button:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--gold); }
+  .slider-wrap { display: flex; align-items: center; gap: 10px; }
+  input[type="range"] { accent-color: var(--green); }
+  #output {
+    background: var(--card);
+    border: 2px dashed var(--gold);
+    border-radius: 6px;
+    padding: 18px;
+    margin-top: 22px;
+    min-height: 90px;
+    font-size: 1.05rem;
+    white-space: pre-wrap;
+  }
+  #output.empty { opacity: 0.5; font-style: italic; }
+  .explainer {
+    margin-top: 40px;
+    padding-top: 18px;
+    border-top: 2px solid var(--green);
+    font-size: 0.95rem;
+  }
+  .explainer h2 { color: var(--green); font-size: 1.2rem; }
+</style>
+</head>
+<body>
+
+<h1>Baby LLM</h1>
+<p class="subtitle">A Markov chain text generator — the simplest ancestor of ChatGPT.</p>
+
+<label for="source">1 · Paste any text here (the more, the better)</label>
+<textarea id="source">Alice was beginning to get very tired of sitting by her sister on the bank, and of having nothing to do: once or twice she had peeped into the book her sister was reading, but it had no pictures or conversations in it, and what is the use of a book, thought Alice, without pictures or conversations? So she was considering in her own mind, as well as she could, for the hot day made her feel very sleepy and stupid, whether the pleasure of making a daisy-chain would be worth the trouble of getting up and picking the daisies, when suddenly a White Rabbit with pink eyes ran close by her. There was nothing so very remarkable in that; nor did Alice think it so very much out of the way to hear the Rabbit say to itself, oh dear! Oh dear! I shall be late! When she thought it over afterwards, it occurred to her that she ought to have wondered at this, but at the time it all seemed quite natural. But when the Rabbit actually took a watch out of its waistcoat-pocket, and looked at it, and then hurried on, Alice started to her feet, for it flashed across her mind that she had never before seen a rabbit with either a waistcoat-pocket, or a watch to take out of it, and burning with curiosity, she ran across the field after it, and fortunately was just in time to see it pop down a large rabbit-hole under the hedge.</textarea>
+
+<div class="controls">
+  <button id="go">2 · Generate</button>
+  <div class="slider-wrap">
+    <span>Length:</span>
+    <input type="range" id="length" min="20" max="200" value="60">
+    <span id="lengthLabel">60 words</span>
+  </div>
+</div>
+
+<div id="output" class="empty">Your generated text will appear here…</div>
+
+<div class="explainer">
+  <h2>How this works (and what it has to do with ChatGPT)</h2>
+  <p>When you click Generate, the page reads your text and builds a table of
+  which word tends to follow each <em>pair</em> of words. For example, after
+  &ldquo;the White&rdquo; the next word might be &ldquo;Rabbit&rdquo; 3 times out of 3. Then it
+  writes new text by starting somewhere and repeatedly rolling weighted dice
+  to pick each next word.</p>
+  <p>That is the same core idea as ChatGPT: <strong>predict the next word</strong>.
+  ChatGPT just uses a neural network trained on trillions of words instead of
+  a small lookup table &mdash; which is why it sounds smart and this sounds a
+  little drunk. Notice how this generator produces sentences that <em>flow</em>
+  but don't <em>mean</em> anything reliable. When ChatGPT confidently states
+  something false, you're seeing the polished version of the same phenomenon.</p>
+</div>
+
+<script>
+  const sourceEl = document.getElementById('source');
+  const outputEl = document.getElementById('output');
+  const lengthEl = document.getElementById('length');
+  const lengthLabel = document.getElementById('lengthLabel');
+
+  lengthEl.addEventListener('input', () => {
+    lengthLabel.textContent = lengthEl.value + ' words';
+  });
+
+  function buildChain(words) {
+    // Map from "word1 word2" -> list of words that followed that pair
+    const chain = {};
+    for (let i = 0; i < words.length - 2; i++) {
+      const key = words[i] + ' ' + words[i + 1];
+      if (!chain[key]) chain[key] = [];
+      chain[key].push(words[i + 2]);
+    }
+    return chain;
+  }
+
+  function pick(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  function generate() {
+    const words = sourceEl.value.trim().split(/\s+/).filter(Boolean);
+    if (words.length < 30) {
+      outputEl.classList.remove('empty');
+      outputEl.textContent = 'Please paste at least 30 words of text so I have something to learn from!';
+      return;
+    }
+
+    const chain = buildChain(words);
+    const target = parseInt(lengthEl.value, 10);
+
+    // Prefer starting at a word that begins a sentence (follows . ! or ?)
+    const sentenceStarts = [];
+    for (let i = 0; i < words.length - 2; i++) {
+      if (i === 0 || /[.!?]$/.test(words[i - 1])) sentenceStarts.push(i);
+    }
+    const start = pick(sentenceStarts.length ? sentenceStarts : [0]);
+
+    let w1 = words[start];
+    let w2 = words[start + 1];
+    const result = [w1, w2];
+
+    while (result.length < target) {
+      const options = chain[w1 + ' ' + w2];
+      if (!options) break; // dead end: this pair never appeared mid-text
+      const next = pick(options);
+      result.push(next);
+      w1 = w2;
+      w2 = next;
+    }
+
+    outputEl.classList.remove('empty');
+    outputEl.textContent = result.join(' ');
+  }
+
+  document.getElementById('go').addEventListener('click', generate);
+</script>
+
+</body>
+</html>
