@@ -9,5 +9,6 @@ import { heroSlide } from "./heroSlide";
 import { digest } from "./digest";
 import { aiQuestion } from "./aiQuestion";
 import { vocabTerm } from "./vocabTerm";
+import { pathStep } from "./pathStep";
 
-export const schemaTypes = [post, workshop, siteSettings, video, page, comment, readingList, heroSlide, digest, aiQuestion, vocabTerm];
+export const schemaTypes = [post, workshop, siteSettings, video, page, comment, readingList, heroSlide, digest, aiQuestion, vocabTerm, pathStep];

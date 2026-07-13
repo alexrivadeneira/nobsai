@@ -132,8 +132,26 @@ async function getHeroSlides(): Promise<HeroSlide[]> {
 }
 
 
+type PathStep = {
+  _id: string;
+  stepNumber: number;
+  title: string;
+  state: "ready" | "next" | "coming";
+  statusLabel: string | null;
+  timeEstimate: string | null;
+  href: string | null;
+};
+
+async function getPathSteps(): Promise<PathStep[]> {
+  return client.fetch(
+    `*[_type == "pathStep" && enabled != false] | order(stepNumber asc) {
+      _id, stepNumber, title, state, statusLabel, timeEstimate, href
+    }`
+  );
+}
+
 export default async function Home() {
-  const [posts, homePages, workshops, links, heroSlides, digest, answeredQuestions] = await Promise.all([getPosts(), getHomePages(), getWorkshops(), getReadingList(), getHeroSlides(), getLatestDigest(), getAnsweredQuestions()]);
+  const [posts, homePages, workshops, links, heroSlides, digest, answeredQuestions, pathSteps] = await Promise.all([getPosts(), getHomePages(), getWorkshops(), getReadingList(), getHeroSlides(), getLatestDigest(), getAnsweredQuestions(), getPathSteps()]);
   const gridItems = [...posts, ...homePages].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   return (
     <>
@@ -141,6 +159,8 @@ export default async function Home() {
       <HeroSection />
 
       <OfficeHoursSection />
+
+      <PathSection steps={pathSteps} />
 
       <div className="mb-8 pb-4" style={{ borderBottom: "2px solid #1a1a1a" }}>
         <div className="text-xs font-black uppercase tracking-widest mb-1" style={{ color: "#2d4a2d" }}>// Latest</div>
@@ -425,6 +445,78 @@ function WorkshopSidebar({ workshops }: { workshops: Workshop[] }) {
       )}
     </div>
   );
+}
+
+function PathSection({ steps }: { steps: PathStep[] }) {
+  if (!steps || steps.length === 0) return null;
+  return (
+    <div className="mb-12">
+      <div className="text-xs font-black uppercase tracking-widest mb-1" style={{ color: "#2d4a2d" }}>// Start here</div>
+      <h2 className="text-4xl font-black uppercase tracking-tight mb-3" style={{ color: "#1a1a1a" }}>The Path</h2>
+      <p className="text-base leading-relaxed mb-6 max-w-2xl" style={{ color: "#4a4a4a", fontFamily: "var(--font-fraunces)" }}>
+        Five short lessons, in order. Each one ends with something real working on your computer. Most people finish a step in under 30 minutes.
+      </p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        {steps.map((step) => (
+          <PathCard key={step._id} step={step} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function PathCard({ step }: { step: PathStep }) {
+  const AMBER = "#e0a93b";
+  const isReady = step.state === "ready";
+  const isNext = step.state === "next";
+  const isComing = step.state === "coming";
+
+  const defaultLabel = isReady ? "Ready" : isNext ? "Next up" : "Coming soon";
+  const statusText = [step.statusLabel || defaultLabel, step.timeEstimate].filter(Boolean).join(" · ");
+
+  const cardBg = isReady ? "#2d4a2d" : isNext ? "#faf7ef" : "transparent";
+  const cardBorder = isComing ? "2px dashed #c4bca8" : "2px solid #1a1a1a";
+  const cardShadow = isComing ? "none" : "4px 4px 0px #1a1a1a";
+  const titleColor = isReady ? "#ffffff" : isComing ? "#a89f8d" : "#1a1a1a";
+  const statusColor = isReady ? "#c7b26a" : isComing ? "#b3aa96" : "#6b6b6b";
+  const badgeBg = isReady ? AMBER : "transparent";
+  const badgeColor = isReady ? "#1a1a1a" : isComing ? "#b3aa96" : "#1a1a1a";
+  const badgeBorder = isReady ? "1px solid #1a1a1a" : isComing ? "2px solid #d3cbb8" : "2px solid #1a1a1a";
+
+  const inner = (
+    <div className="relative h-full p-5 flex flex-col" style={{ minHeight: 150, background: cardBg, border: cardBorder, boxShadow: cardShadow }}>
+      {isNext && (
+        <span
+          className="absolute"
+          style={{ top: -13, left: 12, background: AMBER, color: "#1a1a1a", border: "2px solid #1a1a1a", fontSize: "10px", fontWeight: 900, letterSpacing: "0.08em", textTransform: "uppercase", padding: "2px 8px" }}
+        >
+          Next up
+        </span>
+      )}
+      <div
+        className="flex items-center justify-center rounded-full"
+        style={{ width: 28, height: 28, fontFamily: "var(--font-fraunces)", fontWeight: 800, fontSize: "0.85rem", background: badgeBg, color: badgeColor, border: badgeBorder }}
+      >
+        {step.stepNumber}
+      </div>
+      <div className="flex-1" style={{ minHeight: 24 }} />
+      <h3 className="leading-tight mb-2" style={{ fontFamily: "var(--font-fraunces)", fontWeight: 800, fontSize: "1.05rem", color: titleColor }}>
+        {step.title}
+      </h3>
+      <div style={{ fontSize: "10px", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: statusColor }}>
+        {statusText}
+      </div>
+    </div>
+  );
+
+  if (step.href) {
+    return (
+      <Link href={step.href} className="btn-press block h-full" style={{ textDecoration: "none" }}>
+        {inner}
+      </Link>
+    );
+  }
+  return inner;
 }
 
 function DigestSidebar({ digest }: { digest: DigestTeaser }) {
