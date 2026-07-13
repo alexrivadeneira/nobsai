@@ -289,7 +289,7 @@ export default function HowToExplainAI() {
           href="https://tally.so"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-block text-xs font-black uppercase px-5 py-3 text-white"
+          className="btn-press inline-block text-xs font-black uppercase px-5 py-3 text-white"
           style={{ background: "#2d4a2d", border: "2px solid #1a1a1a", boxShadow: "2px 2px 0 #1a1a1a" }}
         >
           Tell us about yourself →

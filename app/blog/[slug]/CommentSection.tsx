@@ -64,7 +64,7 @@ export default function CommentSection({ slug, comments, hasAccess }: Props) {
           <p className="text-sm mb-3" style={{ color: "#4a4a4a" }}>Join the list to leave a comment.</p>
           <Link
             href={`/join?redirect=/blog/${slug}`}
-            className="inline-block text-xs font-black uppercase px-5 py-2 text-white"
+            className="btn-press inline-block text-xs font-black uppercase px-5 py-2 text-white"
             style={{ background: "#2d4a2d", border: "2px solid #1a1a1a", boxShadow: "2px 2px 0 #1a1a1a" }}
           >
             Join free →
@@ -101,7 +101,7 @@ export default function CommentSection({ slug, comments, hasAccess }: Props) {
           <button
             type="submit"
             disabled={sending}
-            className="text-xs font-black uppercase px-5 py-3 text-white"
+            className="btn-press text-xs font-black uppercase px-5 py-3 text-white"
             style={{ background: "#2d4a2d", border: "2px solid #1a1a1a", boxShadow: "2px 2px 0 #1a1a1a" }}
           >
             {sending ? "Submitting..." : "Post comment →"}

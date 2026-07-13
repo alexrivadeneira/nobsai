@@ -85,6 +85,7 @@ async function getHomePages(): Promise<Post[]> {
 
 type DigestTeaser = {
   date: string;
+  topSummary: string | null;
   items: { _key: string; headline: string }[];
 } | null;
 
@@ -92,6 +93,7 @@ async function getLatestDigest(): Promise<DigestTeaser> {
   return client.fetch(
     `*[_type == "digest"] | order(date desc) [0] {
       date,
+      topSummary,
       items[] { _key, headline }
     }`
   );
@@ -135,6 +137,8 @@ export default async function Home() {
     <>
     <div className="max-w-6xl mx-auto px-6 py-12">
       <HeroSection />
+
+      <OfficeHoursSection />
 
       <div className="mb-8 pb-4" style={{ borderBottom: "2px solid #1a1a1a" }}>
         <div className="text-xs font-black uppercase tracking-widest mb-1" style={{ color: "#2d4a2d" }}>// Latest</div>
@@ -245,24 +249,80 @@ function HeroSection() {
         Go from AI-curious to <span style={highlight}>running your own agents</span>. No code. No hype.
       </h1>
       <p className="text-lg leading-relaxed mb-8 max-w-xl" style={{ color: "#4a4a4a", fontFamily: "var(--font-fraunces)", fontWeight: 400 }}>
-        A step-by-step path, live help every Saturday, and plain-English answers to your actual
-        questions &mdash; from someone who&apos;s taught real people, not just written about it.
+        A step-by-step path, live help every Saturday, in-person workshops, and plain-English answers
+        to your actual questions &hellip; from someone who&apos;s taught real people, not just written about it.
       </p>
       <div className="flex flex-wrap gap-4">
         <Link
           href="#"
-          className="text-sm font-black px-6 py-3"
+          className="btn-press text-sm font-black px-6 py-3"
           style={{ background: "#e8a33d", color: "#1a1a1a", border: "2px solid #1a1a1a", boxShadow: "4px 4px 0px #1a1a1a", fontFamily: "monospace" }}
         >
           Start the path &rarr;
         </Link>
         <Link
           href="#ask"
-          className="text-sm font-black px-6 py-3"
+          className="btn-press text-sm font-black px-6 py-3"
           style={{ background: "#f0ece0", color: "#1a1a1a", border: "2px solid #1a1a1a", boxShadow: "4px 4px 0px #1a1a1a", fontFamily: "monospace" }}
         >
           Ask me your AI problem
         </Link>
+      </div>
+    </div>
+  );
+}
+
+function getNextSaturday(): Date {
+  const now = new Date();
+  const day = now.getDay(); // 0 = Sun ... 6 = Sat
+  const diff = (6 - day + 7) % 7; // 0 if today is already Saturday
+  const result = new Date(now);
+  result.setDate(now.getDate() + diff);
+  return result;
+}
+
+function OfficeHoursSection() {
+  const dateLabel = getNextSaturday().toLocaleDateString("en-US", {
+    weekday: "short",
+    month: "long",
+    day: "numeric",
+  });
+
+  return (
+    <div className="mb-12">
+      <div className="text-xs font-black uppercase tracking-widest mb-1" style={{ color: "#2d4a2d" }}>// Every Saturday</div>
+      <h2 className="text-4xl font-black uppercase tracking-tight mb-4" style={{ color: "#1a1a1a" }}>
+        Office Hours
+      </h2>
+
+      <div className="flex flex-col md:flex-row overflow-hidden" style={{ border: "2px solid #1a1a1a", boxShadow: "6px 6px 0px #1a1a1a" }}>
+        <div className="flex-1 p-8" style={{ background: "#e8a33d", borderBottom: "2px solid #1a1a1a" }}>
+          <h3 className="text-2xl md:text-3xl font-black leading-tight mb-3" style={{ color: "#1a1a1a" }}>
+            Bring an idea. Work through bringing it to life.
+          </h3>
+          <div className="text-xs font-black uppercase tracking-widest mb-4" style={{ color: "#1a1a1a" }}>
+            Saturdays &middot; 11:00 AM PST &middot; Live on Zoom &middot; Free
+          </div>
+          <p className="text-sm leading-relaxed" style={{ color: "#2a2200" }}>
+            Show up with a problem (want to automate some process at your small business, accelerate
+            your work, have a killer app idea, or just want to solve some problem?) and we can work together
+            on screen. Watch other people building even if you don&apos;t bring an idea.
+          </p>
+        </div>
+
+        <div className="w-full md:w-72 flex-shrink-0 flex items-center justify-center p-6" style={{ background: "white" }}>
+          <div className="w-full p-5 text-center" style={{ border: "2px solid #1a1a1a" }}>
+            <div className="text-xs font-black uppercase tracking-widest mb-2" style={{ color: "#2d4a2d" }}>Next Session</div>
+            <div className="text-xl font-black mb-4" style={{ color: "#1a1a1a" }}>{dateLabel}</div>
+            <a
+              href="/api/zoom"
+              className="btn-press block w-full py-3 text-sm font-black uppercase tracking-wide"
+              style={{ border: "2px solid #1a1a1a", color: "#1a1a1a", boxShadow: "3px 3px 0px #1a1a1a" }}
+            >
+              Get the Zoom link
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -350,8 +410,8 @@ function WorkshopSidebar({ workshops }: { workshops: Workshop[] }) {
                 <div className="font-black text-sm mb-1" style={{ color: "#2d4a2d" }}>{w.price}</div>
                 <Link
                   href={w.registerUrl ?? "/register"}
-                  className="text-xs px-2 py-1 font-black uppercase text-white block text-center"
-                  style={{ background: "#2d4a2d", border: "1px solid #1a1a1a" }}
+                  className="btn-press text-xs px-2 py-1 font-black uppercase text-white block text-center"
+                  style={{ background: "#2d4a2d", border: "1px solid #1a1a1a", boxShadow: "2px 2px 0px #1a1a1a" }}
                 >
                   Register
                 </Link>
@@ -373,6 +433,11 @@ function DigestSidebar({ digest }: { digest: DigestTeaser }) {
         <div className="text-xs font-black uppercase tracking-widest mb-1" style={{ color: "#7ab87a" }}>// {dateLabel}</div>
         <h2 className="text-white font-black text-sm uppercase tracking-wide">Today in AI</h2>
       </div>
+      {digest.topSummary && (
+        <p className="px-5 pt-3 text-sm leading-relaxed" style={{ color: "#4a4a4a", fontFamily: "var(--font-fraunces)" }}>
+          {digest.topSummary}
+        </p>
+      )}
       <ul className="px-5 py-3 divide-y" style={{ borderColor: "#e8e4d8" }}>
         {digest.items.slice(0, 3).map((item) => (
           <li key={item._key} className="py-2 text-sm font-bold leading-snug" style={{ color: "#1a1a1a" }}>
@@ -383,7 +448,7 @@ function DigestSidebar({ digest }: { digest: DigestTeaser }) {
       <div className="px-5 pb-4">
         <Link
           href="/digest"
-          className="inline-block text-xs font-black uppercase px-3 py-1.5"
+          className="btn-press inline-block text-xs font-black uppercase px-3 py-1.5"
           style={{ border: "2px solid #1a1a1a", color: "#1a1a1a", boxShadow: "2px 2px 0px #1a1a1a" }}
         >
           Read the full digest →

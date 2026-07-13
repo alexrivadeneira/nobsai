@@ -19,13 +19,14 @@ type DigestItem = {
 type Digest = {
   _id: string;
   date: string;
+  topSummary: string | null;
   items: DigestItem[];
 };
 
 async function getDigests(): Promise<Digest[]> {
   return client.fetch(
     `*[_type == "digest"] | order(date desc) [0...14] {
-      _id, date, items
+      _id, date, topSummary, items
     }`
   );
 }
@@ -76,7 +77,7 @@ export default async function DigestPage() {
       <div className="mt-12 pt-6 text-center" style={{ borderTop: "2px solid #1a1a1a" }}>
         <Link
           href="/join"
-          className="inline-block text-xs font-black uppercase px-4 py-2"
+          className="btn-press inline-block text-xs font-black uppercase px-4 py-2"
           style={{ border: "2px solid #1a1a1a", color: "#1a1a1a", boxShadow: "2px 2px 0px #1a1a1a" }}
         >
           Want this explained live? Join a workshop →
@@ -95,6 +96,14 @@ function DigestCard({ digest, highlight = false }: { digest: Digest; highlight?:
           {formatDate(digest.date)}
         </h2>
       </div>
+      {digest.topSummary && (
+        <div className="px-5 py-4" style={{ background: "#f0ece0", borderBottom: "2px solid #1a1a1a" }}>
+          <div className="text-xs font-black uppercase tracking-widest mb-1" style={{ color: "#2d4a2d" }}>// The Big Picture</div>
+          <p className="text-base leading-relaxed" style={{ color: "#1a1a1a", fontFamily: "var(--font-fraunces)", fontWeight: 500 }}>
+            {digest.topSummary}
+          </p>
+        </div>
+      )}
       <div className="divide-y-2" style={{ borderColor: "#e8e4d8" }}>
         {digest.items?.map((item) => (
           <div key={item._key} className="px-5 py-4">

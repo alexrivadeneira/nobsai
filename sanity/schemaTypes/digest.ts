@@ -12,6 +12,13 @@ export const digest = defineType({
       validation: (r) => r.required(),
     }),
     defineField({
+      name: "topSummary",
+      title: "The Big Picture (max 3 sentences)",
+      type: "text",
+      rows: 3,
+      description: "Plain-English overview of the day's most pertinent items or trends. Optional — digests before July 2026 don't have one.",
+    }),
+    defineField({
       name: "items",
       title: "Stories",
       type: "array",

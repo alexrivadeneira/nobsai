@@ -13,6 +13,19 @@ button:disabled {
   cursor: not-allowed;
 }
 
+.btn-press {
+  transition: transform 0.08s ease-out, box-shadow 0.08s ease-out;
+}
+
+.btn-press:hover:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: 0 0 0 #1a1a1a !important;
+}
+
+.btn-press:active:not(:disabled) {
+  transform: translate(3px, 3px);
+}
+
 .drop-cap::first-letter {
   float: left;
   font-size: 4rem;

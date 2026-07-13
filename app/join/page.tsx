@@ -108,8 +108,8 @@ function JoinForm() {
               <button
                 type="submit"
                 disabled={status === "loading"}
-                className="w-full py-3 text-sm font-black uppercase tracking-widest text-white transition-opacity hover:opacity-90"
-                style={{ background: "#2d4a2d", border: "2px solid #1a1a1a" }}
+                className="btn-press w-full py-3 text-sm font-black uppercase tracking-widest text-white transition-opacity hover:opacity-90"
+                style={{ background: "#2d4a2d", border: "2px solid #1a1a1a", boxShadow: "3px 3px 0px #1a1a1a" }}
               >
                 {status === "loading" ? "Sending..." : cta}
               </button>

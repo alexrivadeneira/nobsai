@@ -43,7 +43,7 @@ export default function OptOutPage() {
       </p>
       <button
         onClick={toggle}
-        className="inline-block text-xs font-black uppercase px-4 py-2 cursor-pointer"
+        className="btn-press inline-block text-xs font-black uppercase px-4 py-2 cursor-pointer"
         style={{ border: "2px solid #1a1a1a", color: "#1a1a1a", background: "white", boxShadow: "2px 2px 0px #1a1a1a" }}
       >
         {optedOut ? "Re-enable counting" : "Exclude this browser"}

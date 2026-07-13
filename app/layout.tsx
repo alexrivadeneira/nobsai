@@ -105,7 +105,7 @@ function Footer() {
             ))}
           </ul>
           <div className="text-sm md:text-right" style={{ color: "#9a9a9a" }}>
-            © 2026 NoBSAI · Oakland, CA
+            © 2026 NoBSAI · Alameda, CA
           </div>
         </div>
       </div>

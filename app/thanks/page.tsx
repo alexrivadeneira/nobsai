@@ -24,7 +24,7 @@ export default async function ThanksPage({ searchParams }: Props) {
           </p>
           <Link
             href="/"
-            className="inline-block text-xs font-black uppercase px-4 py-2"
+            className="btn-press inline-block text-xs font-black uppercase px-4 py-2"
             style={{ border: "2px solid #1a1a1a", color: "#1a1a1a", boxShadow: "2px 2px 0px #1a1a1a" }}
           >
             ← Back to home

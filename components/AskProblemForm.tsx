@@ -61,7 +61,7 @@ export default function AskProblemForm() {
       <button
         type="submit"
         disabled={status === "loading"}
-        className="text-sm font-black px-6 py-3 transition-opacity hover:opacity-90"
+        className="btn-press text-sm font-black px-6 py-3 transition-opacity hover:opacity-90"
         style={{ background: "#e8a33d", color: "#1a1a1a", border: "2px solid #1a1a1a", boxShadow: "4px 4px 0px #1a1a1a", fontFamily: "monospace" }}
       >
         {status === "loading" ? "Sending..." : "Send it →"}

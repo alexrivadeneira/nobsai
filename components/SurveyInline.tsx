@@ -186,7 +186,7 @@ export default function SurveyInline() {
               <button
                 type="submit"
                 disabled={sending || learnInterests.length === 0 || hearAbout.length === 0 || (!existingEmail && !email)}
-                className="w-full py-3 text-sm font-black uppercase text-white"
+                className="btn-press w-full py-3 text-sm font-black uppercase text-white"
                 style={{
                   background: (learnInterests.length === 0 || hearAbout.length === 0 || (!existingEmail && !email)) ? "#9a9a9a" : "#2d4a2d",
                   border: "2px solid #1a1a1a", boxShadow: "3px 3px 0 #1a1a1a",

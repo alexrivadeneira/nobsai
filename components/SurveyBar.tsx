@@ -112,7 +112,7 @@ export default function SurveyBar() {
           <div className="flex items-center gap-3">
             <button
               onClick={() => setOpen(true)}
-              className="text-xs font-black uppercase px-4 py-2 text-white"
+              className="btn-press text-xs font-black uppercase px-4 py-2 text-white"
               style={{ background: "#2d4a2d", border: "2px solid #1a1a1a", boxShadow: "2px 2px 0 #1a1a1a" }}
             >
               Tell us about yourself →
@@ -255,7 +255,7 @@ export default function SurveyBar() {
               <button
                 type="submit"
                 disabled={sending || learnInterests.length === 0 || hearAbout.length === 0}
-                className="w-full py-3 text-sm font-black uppercase text-white"
+                className="btn-press w-full py-3 text-sm font-black uppercase text-white"
                 style={{
                   background: learnInterests.length === 0 || hearAbout.length === 0 ? "#9a9a9a" : "#2d4a2d",
                   border: "2px solid #1a1a1a",

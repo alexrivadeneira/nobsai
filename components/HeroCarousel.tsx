@@ -102,7 +102,7 @@ export default function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
           <button
             onClick={() => goTo(index - 1)}
             aria-label="Previous slide"
-            className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center font-black text-lg hover:opacity-80"
+            className="btn-press absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center font-black text-lg hover:opacity-80"
             style={{ background: "#f0ece0", border: "2px solid #1a1a1a", boxShadow: "2px 2px 0px #1a1a1a", color: "#1a1a1a" }}
           >
             ←
@@ -110,7 +110,7 @@ export default function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
           <button
             onClick={() => goTo(index + 1)}
             aria-label="Next slide"
-            className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center font-black text-lg hover:opacity-80"
+            className="btn-press absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center font-black text-lg hover:opacity-80"
             style={{ background: "#f0ece0", border: "2px solid #1a1a1a", boxShadow: "2px 2px 0px #1a1a1a", color: "#1a1a1a" }}
           >
             →

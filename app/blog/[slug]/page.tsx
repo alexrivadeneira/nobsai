@@ -170,7 +170,7 @@ export default async function BlogPost({ params }: Props) {
         )}
         <Link
           href={joinUrl}
-          className="inline-block text-sm font-black uppercase px-8 py-4 text-white"
+          className="btn-press inline-block text-sm font-black uppercase px-8 py-4 text-white"
           style={{ background: "#2d4a2d", border: "2px solid #1a1a1a", boxShadow: "4px 4px 0 #1a1a1a" }}
         >
           Get Access — It's Free →
