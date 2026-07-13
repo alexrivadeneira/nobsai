@@ -277,7 +277,7 @@ function HeroSection() {
       </p>
       <div className="flex flex-wrap gap-4">
         <Link
-          href="#"
+          href="#path"
           className="btn-press text-sm font-black px-6 py-3"
           style={{ background: "#e8a33d", color: "#1a1a1a", border: "2px solid #1a1a1a", boxShadow: "4px 4px 0px #1a1a1a", fontFamily: "monospace" }}
         >
@@ -450,7 +450,7 @@ function WorkshopSidebar({ workshops }: { workshops: Workshop[] }) {
 function PathSection({ steps }: { steps: PathStep[] }) {
   if (!steps || steps.length === 0) return null;
   return (
-    <div className="mb-12">
+    <div id="path" className="mb-12 scroll-mt-8">
       <div className="text-xs font-black uppercase tracking-widest mb-1" style={{ color: "#2d4a2d" }}>// Start here</div>
       <h2 className="text-4xl font-black uppercase tracking-tight mb-3" style={{ color: "#1a1a1a" }}>The Path</h2>
       <p className="text-base leading-relaxed mb-6 max-w-2xl" style={{ color: "#4a4a4a", fontFamily: "var(--font-fraunces)" }}>

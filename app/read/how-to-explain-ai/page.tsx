@@ -285,15 +285,13 @@ export default function HowToExplainAI() {
         <p className="text-sm mb-4" style={{ color: "#4a4a4a" }}>
           Upcoming in-person East Bay workshops where we go from zero to working AI tools. No hype. Bring your laptop.
         </p>
-        <a
-          href="https://tally.so"
-          target="_blank"
-          rel="noopener noreferrer"
+        <Link
+          href="/join"
           className="btn-press inline-block text-xs font-black uppercase px-5 py-3 text-white"
           style={{ background: "#2d4a2d", border: "2px solid #1a1a1a", boxShadow: "2px 2px 0 #1a1a1a" }}
         >
           Tell us about yourself →
-        </a>
+        </Link>
       </div>
 
       <div className="mt-10 pt-8 print:hidden" style={{ borderTop: "2px solid #1a1a1a" }}>
