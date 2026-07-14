@@ -7,7 +7,7 @@ quotes are real; links were live as of July 2026.
 
 **The frame (important):** this is NOT a success story. It's a pre-registered
 experiment: the kill criteria were written down *before* launch, and the series
-promises readers the verdict either way. That's the noBSAI differentiator —
+promises readers the verdict either way. That's the Working Knowledge AI differentiator —
 receipts over hype, including the mortality odds stated up front.
 
 ---

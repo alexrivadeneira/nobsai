@@ -1,7 +1,7 @@
 import { ogCard, OG_SIZE } from "../_og/card";
 import { client } from "@/sanity/lib/client";
 
-export const alt = "noBSAI — AI News Digest";
+export const alt = "Working Knowledge AI — AI News Digest";
 export const size = OG_SIZE;
 export const contentType = "image/png";
 export const revalidate = 60;

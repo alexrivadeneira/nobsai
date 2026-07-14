@@ -1,6 +1,6 @@
 import { ogCard, OG_SIZE } from "../_og/card";
 
-export const alt = "noBSAI Video Library";
+export const alt = "Working Knowledge AI Video Library";
 export const size = OG_SIZE;
 export const contentType = "image/png";
 

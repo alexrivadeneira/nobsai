@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-// Shared 1200x630 Open Graph card renderer for noBSAI.
+// Shared 1200x630 Open Graph card renderer for Working Knowledge AI.
 // Produces a branded, neo-brutalist card given an eyebrow/title/subtitle.
 // Brand fonts (Fraunces + Inter) are loaded at render time from Google Fonts;
 // if that fetch fails (e.g. no network at build), it falls back to the
@@ -39,7 +39,7 @@ type CardInput = {
 };
 
 export async function ogCard({ eyebrow, title, subtitle }: CardInput) {
-  const text = `${eyebrow}${title}${subtitle ?? ""}noBSAInobsai.tech`;
+  const text = `${eyebrow}${title}${subtitle ?? ""}Working Knowledge AIworkingknowledge.ai`;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let fonts: any[] = [];
@@ -147,9 +147,8 @@ export async function ogCard({ eyebrow, title, subtitle }: CardInput) {
                 color: INK,
               }}
             >
-              <span>no</span>
-              <span style={{ color: ORANGE }}>BS</span>
-              <span>AI</span>
+              <span>Working Knowledge </span>
+              <span style={{ color: ORANGE }}>AI</span>
             </div>
             <div
               style={{
@@ -161,7 +160,7 @@ export async function ogCard({ eyebrow, title, subtitle }: CardInput) {
                 color: FAINT,
               }}
             >
-              nobsai.tech
+              workingknowledge.ai
             </div>
           </div>
         </div>

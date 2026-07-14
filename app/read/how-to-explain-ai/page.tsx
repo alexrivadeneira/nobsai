@@ -135,7 +135,7 @@ export default function HowToExplainAI() {
         <p className="text-lg" style={{ color: "#4a4a4a" }}>
           A plain-English breakdown you can actually use — and share.
         </p>
-        <div className="text-xs font-medium mt-3" style={{ color: "#9a9a9a" }}>By Alex · noBSAI</div>
+        <div className="text-xs font-medium mt-3" style={{ color: "#9a9a9a" }}>By Alex · Working Knowledge AI</div>
       </div>
 
       {/* Part 1 */}

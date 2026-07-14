@@ -17,7 +17,7 @@ export const vocabTerm = defineType({
       title: "Definition",
       type: "text",
       rows: 3,
-      description: "Short, no-BS definition shown in the popup. Aim for 1-3 sentences.",
+      description: "Short, plain-English definition shown in the popup. Aim for 1-3 sentences.",
       validation: (r) => r.required(),
     }),
     defineField({

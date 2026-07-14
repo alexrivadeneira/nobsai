@@ -20,15 +20,15 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.nobsai.tech"),
+  metadataBase: new URL("https://www.workingknowledge.ai"),
   title: {
-    default: "noBSAI — AI without the hype",
-    template: "%s · noBSAI",
+    default: "Working Knowledge AI — AI without the hype",
+    template: "%s · Working Knowledge AI",
   },
   description: "Plain-English AI education for East Bay locals. Free guide + in-person workshops. No jargon, no PhD required.",
   openGraph: {
-    url: "https://www.nobsai.tech",
-    siteName: "noBSAI",
+    url: "https://www.workingknowledge.ai",
+    siteName: "Working Knowledge AI",
     type: "website",
     locale: "en_US",
   },
@@ -91,7 +91,7 @@ function Footer() {
         <div className="max-w-6xl mx-auto px-8 py-8 grid grid-cols-1 md:grid-cols-3 gap-8">
           <p className="text-sm leading-relaxed" style={{ color: "#9a9a9a" }}>
             Before getting into tech, I was a high school educator. I&apos;ve taught coding classes
-            at Berkeley Public Library and worked over a decade at startups and big tech. NoBSAI is
+            at Berkeley Public Library and worked over a decade at startups and big tech. Working Knowledge AI is
             where I teach AI the same way: plainly.
           </p>
           <ul className="space-y-1.5">
@@ -104,7 +104,7 @@ function Footer() {
             ))}
           </ul>
           <div className="text-sm md:text-right" style={{ color: "#9a9a9a" }}>
-            © 2026 NoBSAI · Alameda, CA
+            © 2026 Working Knowledge AI · Alameda, CA
           </div>
         </div>
       </div>

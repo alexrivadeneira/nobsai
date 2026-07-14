@@ -6,7 +6,7 @@ import { CopyJoinLinkAction } from "./sanity/actions/CopyJoinLink";
 
 export default defineConfig({
   name: "default",
-  title: "noBSAI",
+  title: "Working Knowledge AI",
   projectId: "sf46mco2",
   dataset: "production",
   basePath: "/studio",

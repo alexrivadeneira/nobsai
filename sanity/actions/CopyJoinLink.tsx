@@ -16,7 +16,7 @@ export function CopyJoinLinkAction(props: DocumentActionProps) {
         alert("Save and publish the post first to get a slug.");
         return;
       }
-      const base = "https://www.nobsai.tech";
+      const base = "https://www.workingknowledge.ai";
       const params = new URLSearchParams({
         redirect: `/blog/${slug}`,
         ...(title ? { headline: title } : {}),

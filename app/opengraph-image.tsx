@@ -1,6 +1,6 @@
 import { ogCard, OG_SIZE } from "./_og/card";
 
-export const alt = "noBSAI — AI without the hype";
+export const alt = "Working Knowledge AI — AI without the hype";
 export const size = OG_SIZE;
 export const contentType = "image/png";
 

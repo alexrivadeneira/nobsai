@@ -15,21 +15,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = await getPost(slug);
   if (!post) return {};
   return {
-    title: `${post.title} | noBSAI`,
+    title: `${post.title} | Working Knowledge AI`,
     description: post.excerpt ?? "Practical AI education from the East Bay.",
     openGraph: {
       title: post.title,
       description: post.excerpt ?? "Practical AI education from the East Bay.",
-      url: `https://www.nobsai.tech/blog/${slug}`,
-      siteName: "noBSAI",
-      images: post.image ? [{ url: post.image, alt: post.title }] : [{ url: "https://www.nobsai.tech/logo.png" }],
+      url: `https://www.workingknowledge.ai/blog/${slug}`,
+      siteName: "Working Knowledge AI",
+      images: post.image ? [{ url: post.image, alt: post.title }] : [{ url: "https://www.workingknowledge.ai/logo.png" }],
       type: "article",
     },
     twitter: {
       card: "summary_large_image",
       title: post.title,
       description: post.excerpt ?? "Practical AI education from the East Bay.",
-      images: post.image ? [post.image] : ["https://www.nobsai.tech/logo.png"],
+      images: post.image ? [post.image] : ["https://www.workingknowledge.ai/logo.png"],
     },
   };
 }
