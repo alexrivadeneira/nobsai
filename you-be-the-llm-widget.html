@@ -1,0 +1,194 @@
+<meta charset="utf-8">
+<!-- YOU BE THE LLM — interactive widget for nobsai.tech
+     Paste this ENTIRE file into an "HTML Embed" block in Sanity Studio.
+     Self-contained: no external libraries, styles are scoped to .ybtl. -->
+<div id="ybtl-root" class="ybtl"></div>
+<style>
+  .ybtl { border: 2px solid #1a1a1a; background: #f0ece0; box-shadow: 6px 6px 0 #1a1a1a; font-family: inherit; }
+  .ybtl * { box-sizing: border-box; }
+  .ybtl-head { background: #2d4a2d; padding: 14px 20px; border-bottom: 2px solid #1a1a1a; }
+  .ybtl-kicker { font-family: monospace; font-size: 11px; font-weight: 900; letter-spacing: 0.12em; text-transform: uppercase; color: #7ab87a; margin-bottom: 2px; }
+  .ybtl-title { color: #fff; font-weight: 900; font-size: 20px; text-transform: uppercase; letter-spacing: 0.02em; }
+  .ybtl-body { padding: 20px; }
+  .ybtl-progress { font-family: monospace; font-size: 11px; font-weight: 700; color: #6b6b6b; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.08em; }
+  .ybtl-prompt { font-size: 19px; line-height: 1.5; color: #1a1a1a; margin-bottom: 16px; }
+  .ybtl-blank { display: inline-block; min-width: 64px; border-bottom: 3px solid #e8a33d; text-align: center; font-weight: 900; color: #2d4a2d; }
+  .ybtl-instruction { font-family: monospace; font-size: 12px; color: #6b6b6b; margin-bottom: 10px; }
+  .ybtl-opts { display: flex; flex-wrap: wrap; gap: 10px; }
+  .ybtl-opt { cursor: pointer; font-family: monospace; font-weight: 700; font-size: 14px; padding: 10px 16px; background: #fff; color: #1a1a1a; border: 2px solid #1a1a1a; box-shadow: 3px 3px 0 #1a1a1a; }
+  .ybtl-opt:hover { background: #e8a33d; }
+  .ybtl-opt:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 #1a1a1a; }
+  .ybtl-bars { display: flex; flex-direction: column; gap: 8px; margin: 6px 0 14px; }
+  .ybtl-barrow { display: flex; align-items: center; gap: 10px; }
+  .ybtl-barword { font-family: monospace; font-size: 13px; font-weight: 700; width: 130px; flex-shrink: 0; text-align: right; color: #1a1a1a; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ybtl-bartrack { flex: 1; background: #fff; border: 2px solid #1a1a1a; height: 26px; position: relative; }
+  .ybtl-barfill { height: 100%; width: 0; background: #7ab87a; transition: width 0.9s ease; }
+  .ybtl-barfill.ybtl-top { background: #2d4a2d; }
+  .ybtl-barpct { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); font-family: monospace; font-size: 11px; font-weight: 900; color: #1a1a1a; }
+  .ybtl-tag { font-family: monospace; font-size: 10px; font-weight: 900; padding: 1px 6px; border: 2px solid #1a1a1a; background: #e8a33d; margin-left: 8px; white-space: nowrap; }
+  .ybtl-tag.ybtl-model { background: #c8e6c8; }
+  .ybtl-note { font-size: 14px; line-height: 1.6; color: #2a2a2a; background: #fff; border: 2px solid #1a1a1a; border-left: 5px solid #e8a33d; padding: 12px 14px; margin-bottom: 14px; }
+  .ybtl-btn { cursor: pointer; display: inline-block; font-family: monospace; font-weight: 900; font-size: 13px; text-transform: uppercase; padding: 11px 22px; background: #2d4a2d; color: #f0ece0; border: 2px solid #1a1a1a; box-shadow: 3px 3px 0 #1a1a1a; }
+  .ybtl-btn:hover { background: #1e3a2a; }
+  .ybtl-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 #1a1a1a; }
+  .ybtl-final-score { font-family: monospace; font-weight: 900; font-size: 15px; color: #2d4a2d; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .ybtl-final p { font-size: 15px; line-height: 1.65; color: #2a2a2a; margin: 0 0 12px; }
+  .ybtl-reset { font-family: monospace; font-size: 12px; color: #6b6b6b; cursor: pointer; text-decoration: underline; background: none; border: none; padding: 0; margin-top: 4px; }
+  @media (max-width: 480px) { .ybtl-barword { width: 84px; font-size: 11px; } .ybtl-prompt { font-size: 17px; } }
+</style>
+<script>
+(function () {
+  var ROUNDS = [
+    {
+      prompt: "The cat sat on the",
+      options: [
+        { w: "mat", p: 71 },
+        { w: "floor", p: 12 },
+        { w: "keyboard", p: 9 },
+        { w: "moon", p: 2 }
+      ],
+      note: "“Mat” wins by a landslide; this pattern would show up in practically any normal training text. Predictable text means confident predictions."
+    },
+    {
+      prompt: "Sorry I’m running late — can we push the meeting to",
+      options: [
+        { w: "tomorrow", p: 41 },
+        { w: "Thursday", p: 24 },
+        { w: "next week", p: 19 },
+        { w: "the moon", p: 1 }
+      ],
+      note: "Trickier — there’s no single right answer, just likelier and less likely ones. That’s why LLMs have a randomness dial (called temperature); having some amount of randomness is useful for creativity or when an exact answer isn't clear."
+    },
+    {
+      prompt: "Napoleon was famously",
+      options: [
+        { w: "short", p: 64 },
+        { w: "ambitious", p: 18 },
+        { w: "exiled", p: 9 },
+        { w: "tall", p: 1 }
+      ],
+      note: "Gotcha: “short” is by far the likeliest word — millions of people wrote it and therefore the model got trained on that — but it’s FALSE. Napoleon was about 5'7\", average for his era; the myth came from British propaganda. The model predicts what people usually SAY, not what’s true. Popular myths are high-probability text — and that’s the raw material of every “hallucination.”"
+    }
+  ];
+
+  var root = document.getElementById("ybtl-root");
+  if (!root) return;
+  var state = { round: 0, matches: 0 };
+
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+
+  function header() {
+    var h = el("div", "ybtl-head");
+    h.appendChild(el("div", "ybtl-kicker", "// Interactive"));
+    h.appendChild(el("div", "ybtl-title", "Be the LLM"));
+    return h;
+  }
+
+  function renderRound() {
+    root.innerHTML = "";
+    root.appendChild(header());
+    var body = el("div", "ybtl-body");
+    var r = ROUNDS[state.round];
+
+    body.appendChild(el("div", "ybtl-progress", "Round " + (state.round + 1) + " of " + ROUNDS.length));
+
+    var prompt = el("div", "ybtl-prompt");
+    prompt.appendChild(document.createTextNode("“" + r.prompt + " "));
+    prompt.appendChild(el("span", "ybtl-blank", "____"));
+    prompt.appendChild(document.createTextNode("”"));
+    body.appendChild(prompt);
+
+    body.appendChild(el("div", "ybtl-instruction", "Your job: pick the word most likely to come next."));
+
+    var opts = el("div", "ybtl-opts");
+    r.options.forEach(function (o) {
+      var b = el("button", "ybtl-opt", o.w);
+      b.type = "button";
+      b.addEventListener("click", function () { reveal(o); });
+      opts.appendChild(b);
+    });
+    body.appendChild(opts);
+    root.appendChild(body);
+  }
+
+  function reveal(picked) {
+    var r = ROUNDS[state.round];
+    var top = r.options.reduce(function (a, b) { return b.p > a.p ? b : a; });
+    if (picked.w === top.w) state.matches++;
+
+    root.innerHTML = "";
+    root.appendChild(header());
+    var body = el("div", "ybtl-body");
+    body.appendChild(el("div", "ybtl-progress", "Round " + (state.round + 1) + " of " + ROUNDS.length + " · what the model computed:"));
+
+    var prompt = el("div", "ybtl-prompt");
+    prompt.appendChild(document.createTextNode("“" + r.prompt + " "));
+    prompt.appendChild(el("span", "ybtl-blank", top.w));
+    prompt.appendChild(document.createTextNode("”"));
+    body.appendChild(prompt);
+
+    var bars = el("div", "ybtl-bars");
+    var fills = [];
+    r.options.forEach(function (o) {
+      var row = el("div", "ybtl-barrow");
+      var word = el("div", "ybtl-barword", o.w);
+      var track = el("div", "ybtl-bartrack");
+      var fill = el("div", "ybtl-barfill" + (o.w === top.w ? " ybtl-top" : ""));
+      var pct = el("div", "ybtl-barpct", o.p + "%");
+      track.appendChild(fill);
+      track.appendChild(pct);
+      row.appendChild(word);
+      row.appendChild(track);
+      if (o.w === picked.w) row.appendChild(el("span", "ybtl-tag", "YOU"));
+      if (o.w === top.w) row.appendChild(el("span", "ybtl-tag ybtl-model", "MODEL"));
+      bars.appendChild(row);
+      fills.push({ fill: fill, p: o.p });
+    });
+    body.appendChild(bars);
+
+    body.appendChild(el("div", "ybtl-note", r.note));
+
+    var isLast = state.round === ROUNDS.length - 1;
+    var next = el("button", "ybtl-btn", isLast ? "See what you just did →" : "Next round →");
+    next.type = "button";
+    next.addEventListener("click", function () {
+      if (isLast) { renderFinal(); } else { state.round++; renderRound(); }
+    });
+    body.appendChild(next);
+    root.appendChild(body);
+
+    setTimeout(function () {
+      fills.forEach(function (f) { f.fill.style.width = f.p + "%"; });
+    }, 60);
+  }
+
+  function renderFinal() {
+    root.innerHTML = "";
+    root.appendChild(header());
+    var body = el("div", "ybtl-body ybtl-final");
+
+    body.appendChild(el("div", "ybtl-final-score", "You matched the model " + state.matches + "/" + ROUNDS.length + " times"));
+
+    var p1 = el("p");
+    p1.innerHTML = "Congratulations — you just did <strong>exactly what ChatGPT does</strong>, for every single word it writes. Look at some text, weigh what usually comes next, pick. No understanding required. Just “what word tends to follow?” — billions of times, very fast.";
+    body.appendChild(p1);
+
+    var p2 = el("p");
+    p2.innerHTML = "And round 3 showed you the fine print: the model predicts what people <em>usually say</em> — and sometimes what everyone says is wrong. Most <em>likely</em> is not most <em>true</em>. Keep that in your pocket; it explains almost every weird thing AI does.";
+    body.appendChild(p2);
+
+    var reset = el("button", "ybtl-reset", "↺ play again");
+    reset.type = "button";
+    reset.addEventListener("click", function () { state = { round: 0, matches: 0 }; renderRound(); });
+    body.appendChild(reset);
+    root.appendChild(body);
+  }
+
+  renderRound();
+})();
+</script>

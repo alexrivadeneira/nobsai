@@ -233,7 +233,7 @@ export default function HowToExplainAI() {
       </div>
 
       {/* Buzzword Decoder */}
-      <div className="mb-12">
+      <div id="buzzword" className="mb-12 scroll-mt-8">
         <div className="py-4 px-6 mb-6" style={{ background: "#2d4a2d", border: "2px solid #1a1a1a", boxShadow: "4px 4px 0 #1a1a1a" }}>
           <div className="text-xs font-black uppercase tracking-widest mb-1" style={{ color: "#7ab87a" }}>// Reference</div>
           <h2 className="text-2xl font-black uppercase text-white">Buzzword decoder</h2>

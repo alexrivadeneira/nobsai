@@ -312,7 +312,7 @@ function OfficeHoursSection() {
   });
 
   return (
-    <div className="mb-12">
+    <div id="office-hours" className="mb-12 scroll-mt-8">
       <div className="text-xs font-black uppercase tracking-widest mb-1" style={{ color: "#2d4a2d" }}>// Every Saturday</div>
       <h2 className="text-4xl font-black uppercase tracking-tight mb-4" style={{ color: "#1a1a1a" }}>
         Office Hours
@@ -413,7 +413,7 @@ function WorkshopSidebar({ workshops }: { workshops: Workshop[] }) {
       </div>
       {workshops.length === 0 ? (
         <div className="px-5 py-8 text-center">
-          <p className="text-sm leading-relaxed" style={{ color: "#4a4a4a" }}>This site's where I publish and capture signups; the in-person workshops are exactly what I'm building now, which is why I'm here.</p>
+          <p className="text-sm leading-relaxed" style={{ color: "#4a4a4a" }}>I am currently working with the Alameda Recreation and Parks Department aiming to have multiweek, in-person classes available in Sept-October - stay tuned!</p>
         </div>
       ) : (
         <div className="divide-y-2" style={{ borderColor: "#1a1a1a" }}>

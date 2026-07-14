@@ -3,10 +3,18 @@ import { client } from "@/sanity/lib/client";
 
 export const revalidate = 60;
 
-export const metadata = {
-  title: "AI News Digest | No BS AI",
-  description: "A daily, hype-free digest of AI news in plain English.",
-};
+export async function generateMetadata() {
+  const latest = await client.fetch<{ date: string; topSummary: string | null } | null>(
+    `*[_type == "digest"] | order(date desc)[0]{ date, topSummary }`
+  );
+  const dateLabel = latest?.date ? formatDate(latest.date) : null;
+  return {
+    title: dateLabel ? `AI News Digest — ${dateLabel}` : "AI News Digest",
+    description:
+      latest?.topSummary?.slice(0, 180) ??
+      "A daily, hype-free digest of AI news in plain English.",
+  };
+}
 
 type DigestItem = {
   _key: string;

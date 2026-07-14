@@ -2,6 +2,12 @@ import { client } from "@/sanity/lib/client";
 
 export const revalidate = 60;
 
+export const metadata = {
+  title: "Video Library",
+  description:
+    "Short, plain-English AI videos. No jargon, no PhD required — just clear explanations.",
+};
+
 type Video = {
   _id: string;
   title: string;

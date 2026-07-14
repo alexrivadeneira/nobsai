@@ -1,6 +1,10 @@
 import Link from "next/link";
 
-export const metadata = { title: "You're on the list" };
+export const metadata = {
+  title: "You're on the list",
+  description: "Thanks for signing up — the details are on their way to your inbox.",
+  robots: { index: false, follow: false },
+};
 
 type Props = { searchParams: Promise<{ label?: string; headline?: string; body?: string }> };
 

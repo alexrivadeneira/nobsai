@@ -20,21 +20,20 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "noBSAI — AI without the hype",
+  metadataBase: new URL("https://www.nobsai.tech"),
+  title: {
+    default: "noBSAI — AI without the hype",
+    template: "%s · noBSAI",
+  },
   description: "Plain-English AI education for East Bay locals. Free guide + in-person workshops. No jargon, no PhD required.",
   openGraph: {
-    title: "noBSAI — AI without the hype",
-    description: "Plain-English AI education for East Bay locals. Free guide + in-person workshops. No jargon, no PhD required.",
     url: "https://www.nobsai.tech",
     siteName: "noBSAI",
-    images: [{ url: "https://www.nobsai.tech/og-image.png", width: 1200, height: 628, alt: "noBSAI — AI without the hype" }],
     type: "website",
+    locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
-    title: "noBSAI — AI without the hype",
-    description: "Plain-English AI education for East Bay locals. Free guide + in-person workshops. No jargon, no PhD required.",
-    images: ["https://www.nobsai.tech/og-image.png"],
   },
 };
 
@@ -68,8 +67,8 @@ export default function RootLayout({
 
 function Footer() {
   const links = [
-    { label: "The Path", href: "#" },
-    { label: "Office Hours", href: "#" },
+    { label: "The Path", href: "/#path" },
+    { label: "Office Hours", href: "/#office-hours" },
     { label: "Daily Digest Archive", href: "/digest" },
     { label: "Free guide: Explain AI to Anyone", href: "/join?guide=true" },
   ];
