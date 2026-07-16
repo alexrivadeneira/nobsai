@@ -272,8 +272,7 @@ function HeroSection() {
         Go from AI-curious to <span style={highlight}>running your own agents</span>. No code. No hype.
       </h1>
       <p className="text-lg leading-relaxed mb-8 max-w-xl" style={{ color: "#4a4a4a", fontFamily: "var(--font-fraunces)", fontWeight: 400 }}>
-        A step-by-step path, live help every Saturday, in-person workshops, and plain-English answers
-        to your actual questions &hellip; from someone who&apos;s taught real people, not just written about it.
+        A step-by-step path, live help every Saturday, in-person workshops, and plain-English answers to your actual questions &hellip; from someone who&apos;s taught real people, not just written about it. Empower yourself through accessible knowledge so you can be part of how AI is used in the real world, rather than it dictating your future.
       </p>
       <div className="flex flex-wrap gap-4">
         <Link
