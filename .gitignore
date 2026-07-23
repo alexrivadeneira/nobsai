@@ -40,3 +40,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 AGENTS.md
+
+# local drafts
+drafts/linkedin-openai-rogue-ai-post.md

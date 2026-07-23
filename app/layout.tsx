@@ -7,6 +7,8 @@ import AnalyticsClient from "@/components/AnalyticsClient";
 import Script from "next/script";
 import Link from "next/link";
 import { client } from "@/sanity/lib/client";
+import { PortableText, PortableTextComponents } from "@portabletext/react";
+import type { PortableTextBlock } from "@portabletext/types";
 
 const fraunces = Fraunces({
   variable: "--font-fraunces",
@@ -40,15 +42,13 @@ export const metadata: Metadata = {
 
 type Banner = {
   bannerEnabled?: boolean;
-  bannerText?: string | null;
-  bannerLinkLabel?: string | null;
-  bannerLinkUrl?: string | null;
+  bannerContent?: PortableTextBlock[] | null;
 };
 
 async function getBanner(): Promise<Banner | null> {
   try {
     return await client.fetch(
-      `*[_type == "siteSettings"][0]{ bannerEnabled, bannerText, bannerLinkLabel, bannerLinkUrl }`,
+      `*[_type == "siteSettings"][0]{ bannerEnabled, bannerContent }`,
       {},
       { next: { revalidate: 60 } }
     );
@@ -57,23 +57,31 @@ async function getBanner(): Promise<Banner | null> {
   }
 }
 
+const bannerComponents: PortableTextComponents = {
+  block: {
+    normal: ({ children }) => <span>{children}</span>,
+  },
+  marks: {
+    link: ({ children, value }) => (
+      <Link
+        href={value?.href || "#"}
+        className="mx-1 underline"
+        style={{ color: "#e8a33d", textUnderlineOffset: "3px" }}
+      >
+        {children}
+      </Link>
+    ),
+  },
+};
+
 function AnnouncementBanner({ banner }: { banner: Banner | null }) {
-  if (!banner?.bannerEnabled || !banner.bannerText) return null;
+  if (!banner?.bannerEnabled || !banner.bannerContent?.length) return null;
   return (
     <div
       className="px-4 py-2.5 text-center text-sm font-semibold"
       style={{ background: "#1a1a1a", color: "#f5f0e8" }}
     >
-      {banner.bannerText}
-      {banner.bannerLinkLabel && banner.bannerLinkUrl && (
-        <Link
-          href={banner.bannerLinkUrl}
-          className="ml-2 underline"
-          style={{ color: "#e8a33d", textUnderlineOffset: "3px" }}
-        >
-          {banner.bannerLinkLabel}
-        </Link>
-      )}
+      <PortableText value={banner.bannerContent} components={bannerComponents} />
     </div>
   );
 }
