@@ -1,0 +1,396 @@
+<meta charset="utf-8">
+<!-- THE ROUND TRIP — interactive widget for workingknowledge.ai
+     Shows where a message actually goes: chat app → wrapper → LLM → back.
+     Two rounds, so the second one reveals accumulating context.
+     Paste this ENTIRE file into an "HTML Embed" block in Sanity Studio.
+     Self-contained: no external libraries, styles are scoped to .cgp. -->
+<div id="cgp-root" class="cgp"></div>
+<style>
+  .cgp { border: 2px solid #1a1a1a; background: #f0ece0; box-shadow: 6px 6px 0 #1a1a1a; font-family: inherit; }
+  .cgp * { box-sizing: border-box; }
+  .cgp-head { background: #2d4a2d; padding: 14px 20px; border-bottom: 2px solid #1a1a1a; }
+  .cgp-kicker { font-family: monospace; font-size: 11px; font-weight: 900; letter-spacing: 0.12em; text-transform: uppercase; color: #7ab87a; margin-bottom: 2px; }
+  .cgp-title { color: #fff; font-weight: 900; font-size: 20px; text-transform: uppercase; letter-spacing: 0.02em; }
+  .cgp-caption { display: flex; gap: 12px; align-items: baseline; padding: 12px 20px; background: #fff; border-bottom: 2px solid #1a1a1a; min-height: 62px; }
+  .cgp-stepnum { font-family: monospace; font-size: 10px; font-weight: 900; letter-spacing: 0.08em; color: #fff; background: #2d4a2d; padding: 2px 7px; white-space: nowrap; flex-shrink: 0; }
+  .cgp-captext { font-size: 14px; line-height: 1.5; color: #2a2a2a; }
+  .cgp-stage { display: grid; grid-template-columns: 1fr 30px 1.25fr 30px 1fr; padding: 16px; gap: 0; }
+  .cgp-zone { border: 2px solid #1a1a1a; background: #fff; display: flex; flex-direction: column; min-height: 300px; transition: box-shadow 0.3s, background 0.3s; }
+  .cgp-zone.cgp-lit { box-shadow: 4px 4px 0 #e8a33d; background: #fffdf5; }
+  .cgp-zonelabel { border-bottom: 2px solid #1a1a1a; padding: 8px 10px; font-weight: 900; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: #1a1a1a; background: #f0ece0; }
+  .cgp-zonelabel span { display: block; font-family: monospace; font-size: 10px; font-weight: 700; text-transform: none; letter-spacing: 0; color: #6b6b6b; }
+  .cgp-zonebody { flex: 1; padding: 10px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; max-height: 340px; }
+  /* arrows */
+  .cgp-arrow { display: flex; align-items: center; justify-content: center; font-size: 18px; color: #c9c2ae; user-select: none; }
+  .cgp-arrow span { transition: color 0.2s, transform 0.2s; display: inline-block; }
+  .cgp-arrow.cgp-go span { color: #e8a33d; animation: cgp-nudge 0.6s ease-in-out infinite; }
+  .cgp-arrow.cgp-back span { transform: scaleX(-1); }
+  .cgp-arrow.cgp-back.cgp-go span { color: #e8a33d; animation: cgp-nudge-back 0.6s ease-in-out infinite; }
+  @keyframes cgp-nudge { 0%,100% { transform: translateX(-3px); } 50% { transform: translateX(3px); } }
+  @keyframes cgp-nudge-back { 0%,100% { transform: scaleX(-1) translateX(-3px); } 50% { transform: scaleX(-1) translateX(3px); } }
+  /* chat zone */
+  .cgp-bubble { max-width: 90%; padding: 8px 10px; font-size: 13px; line-height: 1.5; border: 2px solid #1a1a1a; opacity: 0; transform: translateY(6px); transition: opacity 0.4s, transform 0.4s; }
+  .cgp-bubble.cgp-in { opacity: 1; transform: none; }
+  .cgp-bubble.cgp-user { align-self: flex-end; background: #c8e6c8; }
+  .cgp-bubble.cgp-bot { align-self: flex-start; background: #f0ece0; }
+  .cgp-presets { display: flex; flex-direction: column; gap: 8px; margin-top: auto; }
+  .cgp-presets-hint { font-family: monospace; font-size: 10px; font-weight: 700; color: #6b6b6b; text-transform: uppercase; letter-spacing: 0.06em; }
+  .cgp-preset { cursor: pointer; text-align: left; font-family: monospace; font-weight: 700; font-size: 12px; padding: 9px 10px; background: #fff; color: #1a1a1a; border: 2px solid #1a1a1a; box-shadow: 3px 3px 0 #1a1a1a; }
+  .cgp-preset:hover { background: #e8a33d; }
+  .cgp-preset:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 #1a1a1a; }
+  /* wrapper: one growing paragraph of text */
+  .cgp-para { border: 2px solid #1a1a1a; background: #fff; font-family: monospace; font-size: 11.5px; line-height: 1.7; padding: 10px 12px; color: #2a2a2a; opacity: 0; transform: translateY(8px); transition: opacity 0.35s, transform 0.35s; flex-shrink: 0; }
+  .cgp-para.cgp-in { opacity: 1; transform: none; }
+  .cgp-para.cgp-dim { opacity: 0.35; }
+  .cgp-t-msg { font-weight: 900; color: #1a1a1a; }
+  .cgp-t-sys { background: #c8e6c8; padding: 1px 2px; opacity: 0; transition: opacity 0.7s; }
+  .cgp-t-hist { background: #f3cf9a; padding: 1px 2px; opacity: 0; transition: opacity 0.7s; }
+  .cgp-t-on { opacity: 1; }
+  .cgp-legend { display: flex; flex-wrap: wrap; gap: 6px 12px; font-family: monospace; font-size: 10px; color: #6b6b6b; flex-shrink: 0; }
+  .cgp-legend i { font-style: normal; display: inline-block; width: 10px; height: 10px; border: 1px solid #1a1a1a; margin-right: 4px; vertical-align: -1px; }
+  .cgp-emptyhint { font-family: monospace; font-size: 11px; color: #a9a190; margin: auto; text-align: center; padding: 0 12px; line-height: 1.6; }
+  /* llm zone */
+  .cgp-fn { font-family: monospace; font-size: 11px; font-weight: 700; color: #2d4a2d; background: #c8e6c8; border: 2px solid #1a1a1a; padding: 6px 8px; text-align: center; flex-shrink: 0; }
+  .cgp-io { border: 2px solid #1a1a1a; flex-shrink: 0; opacity: 0; transform: translateY(8px); transition: opacity 0.35s, transform 0.35s; }
+  .cgp-io.cgp-in { opacity: 1; transform: none; }
+  .cgp-iolabel { font-family: monospace; font-size: 9px; font-weight: 900; letter-spacing: 0.08em; padding: 3px 8px; border-bottom: 2px solid #1a1a1a; background: #f0ece0; }
+  .cgp-iobody { font-family: monospace; font-size: 11px; line-height: 1.6; padding: 6px 8px; min-height: 30px; max-height: 130px; overflow-y: auto; color: #2a2a2a; }
+  .cgp-cursor { display: inline-block; width: 8px; height: 12px; background: #2d4a2d; vertical-align: text-bottom; animation: cgp-blink 0.7s steps(1) infinite; }
+  @keyframes cgp-blink { 50% { opacity: 0; } }
+  /* controls + note */
+  .cgp-controls { display: flex; align-items: center; gap: 14px; padding: 0 16px 16px; }
+  .cgp-btn { cursor: pointer; font-family: monospace; font-weight: 900; font-size: 13px; text-transform: uppercase; padding: 11px 22px; background: #2d4a2d; color: #f0ece0; border: 2px solid #1a1a1a; box-shadow: 3px 3px 0 #1a1a1a; }
+  .cgp-btn:hover:not(:disabled) { background: #1e3a2a; }
+  .cgp-btn:active:not(:disabled) { transform: translate(2px, 2px); box-shadow: 1px 1px 0 #1a1a1a; }
+  .cgp-btn:disabled { cursor: default; opacity: 0.35; }
+  .cgp-reset { font-family: monospace; font-size: 12px; color: #6b6b6b; cursor: pointer; text-decoration: underline; background: none; border: none; padding: 0; }
+  .cgp-note { margin: 0 16px 16px; font-size: 14px; line-height: 1.6; color: #2a2a2a; background: #fff; border: 2px solid #1a1a1a; border-left: 5px solid #e8a33d; padding: 12px 14px; }
+  @media (max-width: 640px) {
+    .cgp-stage { grid-template-columns: 1fr; }
+    .cgp-arrow { padding: 4px 0; }
+    .cgp-arrow span { transform: rotate(90deg); }
+    .cgp-arrow.cgp-back span { transform: rotate(90deg) scaleX(-1); }
+    @keyframes cgp-nudge { 0%,100% { transform: rotate(90deg) translateX(-3px); } 50% { transform: rotate(90deg) translateX(3px); } }
+    @keyframes cgp-nudge-back { 0%,100% { transform: rotate(90deg) scaleX(-1) translateX(-3px); } 50% { transform: rotate(90deg) scaleX(-1) translateX(3px); } }
+    .cgp-zone { min-height: 0; }
+    .cgp-zonebody { max-height: 260px; }
+  }
+</style>
+<script>
+(function () {
+  var PRESETS = [
+    {
+      q1: "What should I make for dinner tonight?",
+      a1: "How about a veggie stir-fry? Quick, one pan, and forgiving — perfect for a weeknight.",
+      q2: "Can you make it spicy?",
+      a2: "Easy — add sriracha and red-pepper flakes to the sauce, or toss in a chopped jalapeño.",
+      ref: "“it”"
+    },
+    {
+      q1: "Write a haiku about my cat.",
+      a1: "Small paws on keyboard — important work is halted. She does not repent.",
+      q2: "Now write one about my dog too.",
+      a2: "He heard the fridge open from three rooms and one dream away. Loyalty has terms.",
+      ref: "“too”"
+    },
+    {
+      q1: "Explain gravity in one sentence.",
+      a1: "Gravity is the pull anything with mass exerts on everything else — big things like Earth pull hardest, which is why you stay put.",
+      q2: "Shorter.",
+      a2: "Stuff pulls on stuff; big stuff pulls hardest.",
+      ref: "“Shorter”"
+    }
+  ];
+
+  var SYS_TEXT = "You are a helpful assistant. Today is Thursday, July 16, 2026. Be concise and follow the safety rules. The user is on the free plan.";
+
+  var root = document.getElementById("cgp-root");
+  var state = { preset: null, round: 0, step: -1, busy: false };
+  var els = {};
+
+  function h(tag, cls, html) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (html != null) e.innerHTML = html;
+    return e;
+  }
+  function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
+
+  function build() {
+    root.innerHTML =
+      '<div class="cgp-head">' +
+        '<div class="cgp-kicker">Interactive — where your message goes</div>' +
+        '<div class="cgp-title">The Round Trip</div>' +
+      '</div>' +
+      '<div class="cgp-caption"><span class="cgp-stepnum" id="cgp-stepnum">START</span><span class="cgp-captext" id="cgp-captext"></span></div>' +
+      '<div class="cgp-stage">' +
+        '<div class="cgp-zone" id="cgp-zone-app">' +
+          '<div class="cgp-zonelabel">Your screen<span>the chat app</span></div>' +
+          '<div class="cgp-zonebody" id="cgp-chat"></div>' +
+        '</div>' +
+        '<div class="cgp-arrow" id="cgp-arrow1"><span>➤</span></div>' +
+        '<div class="cgp-zone" id="cgp-zone-wrap">' +
+          '<div class="cgp-zonelabel">ChatGPT’s servers<span>the wrapper — you never see this part</span></div>' +
+          '<div class="cgp-zonebody" id="cgp-packet"><div class="cgp-emptyhint">nothing here yet —<br>waiting for a message</div></div>' +
+        '</div>' +
+        '<div class="cgp-arrow" id="cgp-arrow2"><span>➤</span></div>' +
+        '<div class="cgp-zone" id="cgp-zone-llm">' +
+          '<div class="cgp-zonelabel">The LLM<span>just a function</span></div>' +
+          '<div class="cgp-zonebody" id="cgp-llm"><div class="cgp-fn">text in → predict next word → text out</div></div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="cgp-controls">' +
+        '<button class="cgp-btn" id="cgp-next">Next →</button>' +
+        '<button class="cgp-reset" id="cgp-reset">start over</button>' +
+      '</div>' +
+      '<div class="cgp-note" id="cgp-note" hidden></div>';
+
+    ["stepnum","captext","chat","packet","llm","next","reset","note","arrow1","arrow2","zone-app","zone-wrap","zone-llm"].forEach(function (id) {
+      els[id] = document.getElementById("cgp-" + id);
+    });
+    els.next.addEventListener("click", nextStep);
+    els.reset.addEventListener("click", reset);
+  }
+
+  function setCaption(num, text) {
+    els.stepnum.textContent = num;
+    els.captext.innerHTML = text;
+  }
+  function lit(zone) {
+    ["zone-app","zone-wrap","zone-llm"].forEach(function (z) { els[z].classList.remove("cgp-lit"); });
+    if (zone) els[zone].classList.add("cgp-lit");
+  }
+  function arrows(a1, a2) { // null | "go" | "back"
+    [["arrow1", a1], ["arrow2", a2]].forEach(function (pair) {
+      var e = els[pair[0]];
+      e.classList.remove("cgp-go", "cgp-back");
+      if (pair[1] === "go") e.classList.add("cgp-go");
+      if (pair[1] === "back") { e.classList.add("cgp-go", "cgp-back"); }
+    });
+  }
+  function bubble(who, text) {
+    var b = h("div", "cgp-bubble cgp-" + who, esc(text));
+    els.chat.appendChild(b);
+    requestAnimationFrame(function () { requestAnimationFrame(function () { b.classList.add("cgp-in"); }); });
+    els.chat.scrollTop = els.chat.scrollHeight;
+    return b;
+  }
+  function typeOut(target, text, done) {
+    var words = text.split(" ");
+    var i = 0;
+    var cursor = h("span", "cgp-cursor");
+    target.textContent = "";
+    target.appendChild(cursor);
+    var t = setInterval(function () {
+      if (i >= words.length) {
+        clearInterval(t);
+        cursor.remove();
+        done();
+        return;
+      }
+      cursor.before(document.createTextNode((i ? " " : "") + words[i]));
+      i++;
+      target.parentElement.scrollIntoView({ block: "nearest" });
+    }, 130);
+  }
+  function showPresets() {
+    var wrap = h("div", "cgp-presets");
+    wrap.appendChild(h("div", "cgp-presets-hint", state.round === 0 ? "pick a message to send:" : "send the follow-up:"));
+    var opts = state.round === 0 ? PRESETS : [state.preset];
+    opts.forEach(function (p) {
+      var btn = h("button", "cgp-preset", esc(state.round === 0 ? p.q1 : p.q2));
+      btn.addEventListener("click", function () {
+        if (state.busy) return;
+        if (state.round === 0) { state.preset = p; state.round = 1; }
+        else { state.round = 2; }
+        wrap.remove();
+        state.step = 0;
+        runStep();
+      });
+      wrap.appendChild(btn);
+    });
+    els.chat.appendChild(wrap);
+    els.chat.scrollTop = els.chat.scrollHeight;
+  }
+
+  // ---- the paragraph the wrapper builds ----
+  function sys(text) { return '<span class="cgp-t-sys">' + esc(text) + "</span>"; }
+  function hist(text) { return '<span class="cgp-t-hist">' + esc(text) + "</span>"; }
+  function msg(text) { return '<span class="cgp-t-msg">' + esc(text) + "</span>"; }
+
+  function fullParaHTML() {
+    var p = state.preset;
+    var parts = [sys(SYS_TEXT)];
+    if (state.round === 2) {
+      parts.push(hist("User: " + p.q1 + " Assistant: " + p.a1));
+    }
+    parts.push(sys("User:"));
+    parts.push(msg(state.round === 2 ? p.q2 : p.q1));
+    parts.push(sys("Assistant:"));
+    return parts.join(" ");
+  }
+  function fullParaPlain() {
+    var p = state.preset;
+    var out = SYS_TEXT;
+    if (state.round === 2) out += " User: " + p.q1 + " Assistant: " + p.a1;
+    out += " User: " + (state.round === 2 ? p.q2 : p.q1) + " Assistant:";
+    return out;
+  }
+  function legendHTML() {
+    return '<div class="cgp-legend">' +
+      '<span><i style="background:#c8e6c8"></i>added by the app</span>' +
+      (state.round === 2 ? '<span><i style="background:#f3cf9a"></i>pasted history</span>' : "") +
+      '<span><i style="background:#fff"></i><b>your words</b></span>' +
+    "</div>";
+  }
+  // Show just the message, or re-render it grown into the full block
+  function renderPacket(full, done) {
+    var p = state.preset;
+    if (!full) {
+      els.packet.innerHTML = "";
+      var para = h("div", "cgp-para", msg(state.round === 2 ? p.q2 : p.q1));
+      els.packet.appendChild(para);
+      requestAnimationFrame(function () { requestAnimationFrame(function () { para.classList.add("cgp-in"); }); });
+      setTimeout(done, 500);
+    } else {
+      var para2 = h("div", "cgp-para cgp-in", fullParaHTML());
+      els.packet.innerHTML = "";
+      els.packet.appendChild(para2);
+      els.packet.insertAdjacentHTML("beforeend", legendHTML());
+      // fade the app's additions in around the (already visible) message
+      var added = para2.querySelectorAll(".cgp-t-sys, .cgp-t-hist");
+      Array.prototype.forEach.call(added, function (spanEl, i) {
+        setTimeout(function () { spanEl.classList.add("cgp-t-on"); }, 250 + i * 350);
+      });
+      setTimeout(done, 250 + added.length * 350 + 500);
+    }
+  }
+
+  // Each step: { text, run(done) }
+  function steps() {
+    var p = state.preset;
+    var r2 = state.round === 2;
+    return [
+      { text: r2
+          ? "Your follow-up heads to ChatGPT’s servers. Question: how will the model know what " + p.ref + " means?"
+          : "You hit enter. Your message leaves your device for ChatGPT’s servers. The LLM hasn’t seen a thing yet.",
+        run: function (done) {
+          bubble("user", r2 ? p.q2 : p.q1);
+          lit("zone-app"); arrows("go", null);
+          setTimeout(done, 600);
+        } },
+      { text: r2
+          ? "Again it arrives as just your words. On its own, this is unanswerable — " + p.ref + " points at nothing."
+          : "It arrives at ChatGPT’s servers exactly as you typed it. But it’s <b>not</b> going to the model like this.",
+        run: function (done) {
+          lit("zone-wrap"); arrows(null, null);
+          renderPacket(false, done);
+        } },
+      { text: r2
+          ? "There it is. The app stitches the <b>entire earlier conversation</b> into the block — it does this on every single message you send."
+          : "The app rewrites it: its own instructions get stitched around your words until it’s one long block of text. You never see this version.",
+        run: function (done) {
+          lit("zone-wrap"); arrows(null, null);
+          renderPacket(true, done);
+        } },
+      { text: r2
+          ? "The whole block — old messages and new — lands in the LLM. The color-coding is gone because the model doesn’t have any: it’s all equally new text to it."
+          : "That <b>entire block</b> — not just your words — lands in the LLM. Notice the colors are gone: to the model there’s no “yours” and “theirs,” just one blob of text in.",
+        run: function (done) {
+          lit("zone-llm"); arrows(null, "go");
+          Array.prototype.forEach.call(els.packet.querySelectorAll(".cgp-para"), function (c) { c.classList.add("cgp-dim"); });
+          var io = h("div", "cgp-io");
+          io.appendChild(h("div", "cgp-iolabel", "IN — text"));
+          io.appendChild(h("div", "cgp-iobody", esc(fullParaPlain())));
+          var out = h("div", "cgp-io");
+          out.appendChild(h("div", "cgp-iolabel", "OUT — predicted word by word"));
+          out.appendChild(h("div", "cgp-iobody"));
+          els.llm.appendChild(io); els.llm.appendChild(out);
+          els.out = out;
+          requestAnimationFrame(function () { requestAnimationFrame(function () { io.classList.add("cgp-in"); }); });
+          setTimeout(done, 600);
+        } },
+      { text: r2
+          ? "It predicts word by word, using everything in the block. The stitched-in earlier conversation is the only reason this reply fits your follow-up."
+          : "The block ends with “Assistant:” — so the model just keeps predicting the next word until it decides it’s done. Text out. No memory, no mood — just math.",
+        run: function (done) {
+          lit("zone-llm"); arrows(null, null);
+          els.out.classList.add("cgp-in");
+          typeOut(els.out.lastChild, r2 ? p.a2 : p.a1, done);
+        } },
+      { text: r2
+          ? "Back through the servers one more time…"
+          : "The reply travels back through ChatGPT’s servers…",
+        run: function (done) {
+          lit("zone-wrap"); arrows(null, "back");
+          setTimeout(done, 600);
+        } },
+      { text: r2
+          ? "Done. The model never “remembered” round 1 — the app re-sent everything and the model read it fresh. That’s all “context” is."
+          : "…and lands in your chat. One full round trip. Now send a follow-up — and watch the middle box closely this time.",
+        run: function (done) {
+          lit("zone-app"); arrows("back", null);
+          bubble("bot", r2 ? p.a2 : p.a1);
+          setTimeout(function () {
+            arrows(null, null);
+            if (!r2) {
+              showPresets();
+              setCaption("ROUND 2", "Send the follow-up. Notice it’s deliberately vague — on its own, the LLM couldn’t answer it.");
+              els.next.disabled = true;
+              state.step = -1;
+            } else {
+              els.note.hidden = false;
+              els.note.innerHTML = "<b>The takeaway:</b> your follow-up — " + p.ref + " — only made sense because the app pasted the whole conversation back into one block of text. The LLM is a function: it remembers nothing between calls. That ever-growing block is what people call <b>context</b> — and it’s also why long chats eventually get slow, expensive, or forgetful.";
+              els.note.scrollIntoView({ behavior: "smooth", block: "nearest" });
+              els.next.disabled = true;
+            }
+            done();
+          }, 700);
+        } }
+    ];
+  }
+
+  function runStep() {
+    var list = steps();
+    var s = list[state.step];
+    if (!s) return;
+    state.busy = true;
+    els.next.disabled = true;
+    setCaption((state.round === 2 ? "ROUND 2" : "ROUND 1") + " · " + (state.step + 1) + "/" + list.length, s.text);
+    // each round starts fresh in the LLM zone
+    if (state.step === 0) {
+      lit(null);
+      if (state.round === 2) {
+        els.llm.innerHTML = '<div class="cgp-fn">text in → predict next word → text out</div>';
+      }
+    }
+    s.run(function () {
+      state.busy = false;
+      var last = state.step === list.length - 1;
+      if (!last && state.step >= 0) els.next.disabled = false;
+    });
+  }
+
+  function nextStep() {
+    if (state.busy || state.step < 0) return;
+    state.step++;
+    runStep();
+  }
+
+  function reset() {
+    state = { preset: null, round: 0, step: -1, busy: false };
+    build();
+    start();
+  }
+
+  function start() {
+    setCaption("START", "Pick a message and send it — then follow it through every box it touches before a reply comes back.");
+    els.next.disabled = true;
+    els.note.hidden = true;
+    showPresets();
+  }
+
+  build();
+  start();
+})();
+</script>

@@ -1,0 +1,456 @@
+<meta charset="utf-8">
+<!-- BE THE WRAPPER, an interactive widget for workingknowledge.ai (Lesson 2)
+     Companion to THE ROUND TRIP: same three-box pipeline, but flipped.
+     The student RUNS the wrapper now. Customers message "their app";
+     the student writes the job description (role + format) and ships it.
+     With NO instructions at all, the bundle goes in raw and the model
+     just continues the customer's text: naked next-word prediction.
+     Customers react (complain or approve) until the instructions fit.
+     Paste this ENTIRE file into an "HTML Embed" block in Sanity Studio.
+     Self-contained: no external libraries, styles are scoped to .btw. -->
+<div id="btw-root" class="btw"></div>
+<style>
+  .btw { border: 2px solid #1a1a1a; background: #f0ece0; box-shadow: 6px 6px 0 #1a1a1a; font-family: inherit; }
+  .btw * { box-sizing: border-box; }
+  .btw-head { background: #2d4a2d; padding: 14px 20px; border-bottom: 2px solid #1a1a1a; }
+  .btw-kicker { font-family: monospace; font-size: 11px; font-weight: 900; letter-spacing: 0.12em; text-transform: uppercase; color: #7ab87a; margin-bottom: 2px; }
+  .btw-title { color: #fff; font-weight: 900; font-size: 20px; text-transform: uppercase; letter-spacing: 0.02em; }
+  .btw-caption { display: flex; gap: 12px; align-items: baseline; padding: 12px 20px; background: #fff; border-bottom: 2px solid #1a1a1a; min-height: 62px; }
+  .btw-stepnum { font-family: monospace; font-size: 10px; font-weight: 900; letter-spacing: 0.08em; color: #fff; background: #2d4a2d; padding: 2px 7px; white-space: nowrap; flex-shrink: 0; }
+  .btw-captext { font-size: 14px; line-height: 1.5; color: #2a2a2a; }
+  .btw-stage { display: grid; grid-template-columns: 1fr 30px 1.25fr 30px 1fr; padding: 16px; gap: 0; }
+  .btw-zone { border: 2px solid #1a1a1a; background: #fff; display: flex; flex-direction: column; min-height: 330px; transition: box-shadow 0.3s, background 0.3s; }
+  .btw-zone.btw-lit { box-shadow: 4px 4px 0 #e8a33d; background: #fffdf5; }
+  .btw-zonelabel { border-bottom: 2px solid #1a1a1a; padding: 8px 10px; font-weight: 900; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: #1a1a1a; background: #f0ece0; }
+  .btw-zonelabel span { display: block; font-family: monospace; font-size: 10px; font-weight: 700; text-transform: none; letter-spacing: 0; color: #6b6b6b; }
+  .btw-zonebody { flex: 1; padding: 10px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; max-height: 400px; }
+  /* arrows */
+  .btw-arrow { display: flex; align-items: center; justify-content: center; font-size: 18px; color: #c9c2ae; user-select: none; }
+  .btw-arrow span { transition: color 0.2s, transform 0.2s; display: inline-block; }
+  .btw-arrow.btw-go span { color: #e8a33d; animation: btw-nudge 0.6s ease-in-out infinite; }
+  .btw-arrow.btw-back span { transform: scaleX(-1); }
+  .btw-arrow.btw-back.btw-go span { color: #e8a33d; animation: btw-nudge-back 0.6s ease-in-out infinite; }
+  @keyframes btw-nudge { 0%,100% { transform: translateX(-3px); } 50% { transform: translateX(3px); } }
+  @keyframes btw-nudge-back { 0%,100% { transform: scaleX(-1) translateX(-3px); } 50% { transform: scaleX(-1) translateX(3px); } }
+  /* customer chat zone */
+  .btw-bubble { max-width: 92%; padding: 8px 10px; font-size: 13px; line-height: 1.5; border: 2px solid #1a1a1a; opacity: 0; transform: translateY(6px); transition: opacity 0.4s, transform 0.4s; white-space: pre-line; flex-shrink: 0; }
+  .btw-bubble.btw-in { opacity: 1; transform: none; }
+  .btw-bubble.btw-cust { align-self: flex-end; background: #c8e6c8; }
+  .btw-bubble.btw-prod { align-self: flex-start; background: #f0ece0; }
+  .btw-bubble.btw-mad { background: #f3cf9a; }
+  .btw-bubble.btw-glad { border-color: #2d4a2d; box-shadow: 2px 2px 0 #2d4a2d; }
+  .btw-btag { display: inline-block; font-family: monospace; font-size: 9px; font-weight: 900; letter-spacing: 0.06em; text-transform: uppercase; color: #2d4a2d; margin-bottom: 3px; }
+  .btw-chatbtn { cursor: pointer; text-align: left; font-family: monospace; font-weight: 700; font-size: 12px; padding: 9px 10px; background: #fff; color: #1a1a1a; border: 2px solid #1a1a1a; box-shadow: 3px 3px 0 #1a1a1a; margin-top: auto; flex-shrink: 0; }
+  .btw-chatbtn:hover { background: #e8a33d; }
+  .btw-chatbtn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 #1a1a1a; }
+  /* wrapper zone (interactive) */
+  .btw-dial { display: flex; flex-direction: column; gap: 5px; flex-shrink: 0; }
+  .btw-diallabel { font-family: monospace; font-size: 10px; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; color: #6b6b6b; }
+  .btw-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .btw-chip { cursor: pointer; font-family: monospace; font-weight: 700; font-size: 11px; padding: 5px 9px; background: #fff; color: #1a1a1a; border: 2px solid #1a1a1a; box-shadow: 2px 2px 0 #1a1a1a; }
+  .btw-chip:hover { background: #e8a33d; }
+  .btw-chip:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 #1a1a1a; }
+  .btw-chip.btw-on { background: #2d4a2d; color: #f0ece0; }
+  .btw-para { border: 2px solid #1a1a1a; background: #fffdf5; font-family: monospace; font-size: 11px; line-height: 1.7; padding: 9px 11px; color: #2a2a2a; flex-shrink: 0; transition: box-shadow 0.3s; }
+  .btw-para.btw-flash { box-shadow: 0 0 0 3px #e8a33d; }
+  .btw-t-sys { background: #c8e6c8; padding: 1px 2px; }
+  .btw-t-msg { font-weight: 900; color: #1a1a1a; }
+  .btw-t-wait { color: #a9a190; font-style: italic; }
+  .btw-legend { display: flex; flex-wrap: wrap; gap: 6px 12px; font-family: monospace; font-size: 10px; color: #6b6b6b; flex-shrink: 0; }
+  .btw-legend i { font-style: normal; display: inline-block; width: 10px; height: 10px; border: 1px solid #1a1a1a; margin-right: 4px; vertical-align: -1px; }
+  .btw-ship { cursor: pointer; align-self: flex-start; font-family: monospace; font-weight: 900; font-size: 13px; text-transform: uppercase; padding: 11px 22px; background: #2d4a2d; color: #f0ece0; border: 2px solid #1a1a1a; box-shadow: 3px 3px 0 #1a1a1a; }
+  .btw-ship:hover:not(:disabled) { background: #1e3a2a; }
+  .btw-ship:active:not(:disabled) { transform: translate(2px, 2px); box-shadow: 1px 1px 0 #1a1a1a; }
+  .btw-ship:disabled { cursor: default; opacity: 0.35; }
+  /* llm zone */
+  .btw-fn { font-family: monospace; font-size: 11px; font-weight: 700; color: #2d4a2d; background: #c8e6c8; border: 2px solid #1a1a1a; padding: 6px 8px; text-align: center; flex-shrink: 0; }
+  .btw-io { border: 2px solid #1a1a1a; flex-shrink: 0; opacity: 0; transform: translateY(8px); transition: opacity 0.35s, transform 0.35s; }
+  .btw-io.btw-in { opacity: 1; transform: none; }
+  .btw-iolabel { font-family: monospace; font-size: 9px; font-weight: 900; letter-spacing: 0.08em; padding: 3px 8px; border-bottom: 2px solid #1a1a1a; background: #f0ece0; }
+  .btw-iobody { font-family: monospace; font-size: 11px; line-height: 1.6; padding: 6px 8px; min-height: 28px; max-height: 110px; overflow-y: auto; color: #2a2a2a; white-space: pre-line; }
+  .btw-cursor { display: inline-block; width: 8px; height: 12px; background: #2d4a2d; vertical-align: text-bottom; animation: btw-blink 0.7s steps(1) infinite; }
+  @keyframes btw-blink { 50% { opacity: 0; } }
+  .btw-emptyhint { font-family: monospace; font-size: 11px; color: #a9a190; margin: auto; text-align: center; padding: 0 12px; line-height: 1.6; }
+  /* footer */
+  .btw-controls { display: flex; align-items: center; gap: 14px; padding: 0 16px 16px; }
+  .btw-reset { font-family: monospace; font-size: 12px; color: #6b6b6b; cursor: pointer; text-decoration: underline; background: none; border: none; padding: 0; }
+  .btw-note { margin: 0 16px 16px; font-size: 14px; line-height: 1.6; color: #2a2a2a; background: #fff; border: 2px solid #1a1a1a; border-left: 5px solid #e8a33d; padding: 12px 14px; }
+  @media (max-width: 640px) {
+    .btw-stage { grid-template-columns: 1fr; }
+    .btw-arrow { padding: 4px 0; }
+    .btw-arrow span { transform: rotate(90deg); }
+    .btw-arrow.btw-back span { transform: rotate(90deg) scaleX(-1); }
+    @keyframes btw-nudge { 0%,100% { transform: rotate(90deg) translateX(-3px); } 50% { transform: rotate(90deg) translateX(3px); } }
+    @keyframes btw-nudge-back { 0%,100% { transform: rotate(90deg) scaleX(-1) translateX(-3px); } 50% { transform: rotate(90deg) scaleX(-1) translateX(3px); } }
+    .btw-zone { min-height: 0; }
+    .btw-zonebody { max-height: 320px; }
+  }
+</style>
+<script>
+(function () {
+  var SPEED = 1; // test hook: lower = faster animations
+
+  var ROLES = [
+    { id: "none",  chip: "no job description", sys: "" },
+    { id: "cook",  chip: "home cook",          sys: "You are a no-nonsense home cook. Give practical weeknight advice." },
+    { id: "poet",  chip: "poet",               sys: "You are a poet. Answer everything as a poem." },
+    { id: "coach", chip: "nutrition coach",    sys: "You are a nutrition coach. Focus on what the food does for the body." }
+  ];
+  var FORMATS = [
+    { id: "none",     chip: "no format rule", sys: "" },
+    { id: "sentence", chip: "one sentence",   sys: "Reply in one sentence." },
+    { id: "list",     chip: "numbered list",  sys: "Reply as a numbered list." }
+  ];
+
+  var OUT = {
+    none: {
+      sentence: "A quick spinach-and-egg fried rice is probably your best bet.",
+      list: "1. Spinach-and-egg fried rice\n2. Omelet with sautéed spinach, rice on the side\n3. Rice bowl topped with a fried egg\nWant a recipe for any of these?"
+    },
+    cook: {
+      none: "Fried rice, no question. Hot pan, scramble the eggs first and set them aside, wilt the spinach, in with the rice and a splash of soy sauce, eggs back in. Ten minutes, one pan, done.",
+      sentence: "Make egg-and-spinach fried rice: hot pan, ten minutes, one dish to wash.",
+      list: "1. Scramble the eggs hard in a hot pan; set them aside.\n2. Wilt the spinach in the same pan.\n3. Add the rice, a splash of soy sauce, and the eggs back in.\n4. Eat it straight from the pan. I won't tell."
+    },
+    poet: {
+      none: "An egg is a sun that fits in your palm,\nrice a thousand quiet moons,\nspinach the green the winter forgot;\ntonight they set together in one warm bowl.",
+      sentence: "Crack the small sun, scatter the moons, let the green rain fall, and call it dinner.",
+      list: "1. The egg: a dawn, waiting.\n2. The rice: snowfall that agreed to be soft.\n3. The spinach: proof the garden loved you.\n4. Together: a supper, a small ceremony."
+    },
+    coach: {
+      none: "Nice combination. There's real balance here. Two eggs give you about 12g of protein plus B12, the rice is your steady energy source, and spinach brings iron, folate, and fiber. Cooked together it's roughly a 450-calorie meal that will actually keep you full.",
+      sentence: "Together that's a balanced ~450-calorie meal: protein and B12 from the eggs, steady carbs from the rice, iron and folate from the spinach.",
+      list: "1. Eggs: ~6g protein each, plus B12 and choline.\n2. Rice: steady carbohydrates for energy.\n3. Spinach: iron, folate, fiber. A quick sauté keeps the nutrients.\n4. Verdict: a properly balanced plate."
+    }
+  };
+
+  var CUSTOMERS = [
+    {
+      label: "Customer 1, in a hurry",
+      msg: "Driving home in a sec. Give me ONE quick idea for the eggs, rice, and spinach in my fridge.",
+      completion: "Also I think there's half an onion and some leftover chicken in there somewhere. Traffic on 880 is terrible again so I'll be maybe twenty minutes, don't wait on me to start the",
+      rawComplaint: "What?? It just kept typing like it was ME. It finished my own message instead of answering it. Is this thing broken?",
+      target: { role: "cook", fmt: "sentence" },
+      ok: "Perfect. Short, doable, making it tonight.",
+      roleComplaints: {
+        none: "Kinda generic… isn't this supposed to be a cooking app?",
+        poet: "…did your app just send me a POEM? I need dinner, not verse.",
+        coach: "I didn't ask for a nutrition lecture. What do I MAKE?"
+      },
+      fmtComplaints: {
+        none: "Whoa, wall of text. I'm about to DRIVE. One line, please!",
+        list: "I can't read a list at the wheel. Just give me ONE line!"
+      },
+      hint: "They're in a hurry and they want dinner. Which role cooks? Which format fits a red light?"
+    },
+    {
+      label: "Customer 2, the trainer",
+      msg: "It's your trainer. Quick: what do eggs, rice, and spinach actually DO for me? Bullet it, I'm between sets.",
+      completion: "Also you still owe me for last week's session. Today we're doing squats, then deadlifts, then core. Bring water this time. See you at",
+      rawComplaint: "Did your app just… continue my text? I asked a question and it answered as ME.",
+      target: { role: "coach", fmt: "list" },
+      ok: "That's what I'm talking about. Screenshotted for my clients.",
+      roleComplaints: {
+        none: "Too vague. I need actual nutrition facts, not vibes.",
+        cook: "I asked what they DO for the body, not how to fry them.",
+        poet: "Beautiful. Useless mid-workout, but beautiful."
+      },
+      fmtComplaints: {
+        none: "No time to read paragraphs between sets. BULLETS.",
+        sentence: "One sentence? I need it broken down, point by point."
+      },
+      hint: "They want what the food does for the body, and something scannable."
+    },
+    {
+      label: "Customer 3, Grandma",
+      msg: "Hi dear, it's Grandma. Could you write something lovely about tonight's eggs, rice, and spinach dinner for the family group chat?",
+      completion: "Your cousin is coming at six and bringing the baby, and your uncle will be late as usual. Don't forget the folding chairs, and wear something warm, it's supposed to",
+      rawComplaint: "Oh my. It just carried my message right along. That's not an answer, dear, that's an echo.",
+      target: { role: "poet", fmt: "none" },
+      ok: "Oh, this is beautiful. I'm sending it to everyone. Even your uncle.",
+      roleComplaints: {
+        none: "It's nice, dear, but it doesn't sing. You know what I mean.",
+        cook: "That's a recipe, sweetheart. I wanted something lovely.",
+        coach: "Calories? At my age I don't count them. Something LOVELY, dear."
+      },
+      fmtComplaints: {
+        sentence: "Just one little line? Give it room to breathe, dear.",
+        list: "A numbered poem? Hmm. Let it flow, sweetheart."
+      },
+      hint: "She wants it lovely and flowing, not squeezed into a format."
+    }
+  ];
+
+  var root = document.getElementById("btw-root");
+  var state = { cust: -1, role: "none", fmt: "none", busy: false, active: false, ships: 0, sawRaw: false };
+  var els = {};
+
+  function h(tag, cls, html) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (html != null) e.innerHTML = html;
+    return e;
+  }
+  function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
+
+  function build() {
+    root.innerHTML =
+      '<div class="btw-head">' +
+        '<div class="btw-kicker">Interactive: you run the wrapper now</div>' +
+        '<div class="btw-title">Be the Wrapper</div>' +
+      '</div>' +
+      '<div class="btw-caption"><span class="btw-stepnum" id="btw-stepnum">START</span><span class="btw-captext" id="btw-captext"></span></div>' +
+      '<div class="btw-stage">' +
+        '<div class="btw-zone" id="btw-zone-app">' +
+          '<div class="btw-zonelabel">A customer’s screen<span>someone out there is using your app</span></div>' +
+          '<div class="btw-zonebody" id="btw-chat"></div>' +
+        '</div>' +
+        '<div class="btw-arrow" id="btw-arrow1"><span>➤</span></div>' +
+        '<div class="btw-zone" id="btw-zone-wrap">' +
+          '<div class="btw-zonelabel">Your wrapper<span>the middle box is yours today. You write the green text</span></div>' +
+          '<div class="btw-zonebody">' +
+            '<div class="btw-dial"><div class="btw-diallabel">Role</div><div class="btw-chips" id="btw-roles"></div></div>' +
+            '<div class="btw-dial"><div class="btw-diallabel">Format</div><div class="btw-chips" id="btw-fmts"></div></div>' +
+            '<div class="btw-para" id="btw-para"></div>' +
+            '<div class="btw-legend">' +
+              '<span><i style="background:#c8e6c8"></i>instructions you wrote</span>' +
+              '<span><i style="background:#fff"></i><b>the customer’s message</b></span>' +
+            '</div>' +
+            '<button type="button" class="btw-ship" id="btw-ship" disabled>▶ Send to LLM</button>' +
+          '</div>' +
+        '</div>' +
+        '<div class="btw-arrow" id="btw-arrow2"><span>➤</span></div>' +
+        '<div class="btw-zone" id="btw-zone-llm">' +
+          '<div class="btw-zonelabel">The LLM<span>the same frozen function, every run</span></div>' +
+          '<div class="btw-zonebody" id="btw-llm">' +
+            '<div class="btw-fn">text in → predict next word → text out</div>' +
+            '<div class="btw-emptyhint">waiting for a bundle</div>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="btw-controls"><button type="button" class="btw-reset" id="btw-reset">start over</button></div>' +
+      '<div class="btw-note" id="btw-note" hidden></div>';
+
+    ["stepnum","captext","chat","roles","fmts","para","ship","llm","reset","note","arrow1","arrow2","zone-app","zone-wrap","zone-llm"].forEach(function (id) {
+      els[id] = document.getElementById("btw-" + id);
+    });
+
+    chips(els.roles, ROLES, "role");
+    chips(els.fmts, FORMATS, "fmt");
+    els.ship.addEventListener("click", ship);
+    els.reset.addEventListener("click", reset);
+    renderPara();
+  }
+
+  function chips(container, options, key) {
+    options.forEach(function (o) {
+      var c = h("button", "btw-chip" + (state[key] === o.id ? " btw-on" : ""), esc(o.chip));
+      c.type = "button";
+      c.addEventListener("click", function () {
+        if (state.busy) return;
+        state[key] = o.id;
+        Array.prototype.forEach.call(container.children, function (el) { el.classList.remove("btw-on"); });
+        c.classList.add("btw-on");
+        renderPara();
+      });
+      container.appendChild(c);
+    });
+  }
+
+  function pick(list, id) {
+    for (var i = 0; i < list.length; i++) if (list[i].id === id) return list[i];
+    return list[0];
+  }
+  function isRaw() { return state.role === "none" && state.fmt === "none"; }
+  function sysText() {
+    var parts = [];
+    var r = pick(ROLES, state.role).sys;
+    var f = pick(FORMATS, state.fmt).sys;
+    if (r) parts.push(r);
+    if (f) parts.push(f);
+    return parts.join(" ");
+  }
+  function bundlePlain(msg) {
+    return isRaw() ? msg : sysText() + " User: " + msg + " Assistant:";
+  }
+  function renderPara() {
+    var m = state.active ? CUSTOMERS[state.cust].msg : null;
+    var mHTML = m ? '<span class="btw-t-msg">' + esc(m) + '</span>' : '<span class="btw-t-wait">…waiting for a customer message…</span>';
+    if (isRaw()) {
+      els.para.innerHTML = mHTML + ' <span class="btw-t-wait">(no instructions: the raw text goes in exactly as typed)</span>';
+    } else {
+      els.para.innerHTML =
+        '<span class="btw-t-sys">' + esc(sysText()) + ' User:</span> ' + mHTML + ' <span class="btw-t-sys">Assistant:</span>';
+    }
+  }
+
+  function setCaption(num, text) {
+    els.stepnum.textContent = num;
+    els.captext.innerHTML = text;
+  }
+  function lit(zone) {
+    ["zone-app","zone-wrap","zone-llm"].forEach(function (z) { els[z].classList.remove("btw-lit"); });
+    if (zone) els[zone].classList.add("btw-lit");
+  }
+  function arrows(a1, a2) {
+    [["arrow1", a1], ["arrow2", a2]].forEach(function (pair) {
+      var e = els[pair[0]];
+      e.classList.remove("btw-go", "btw-back");
+      if (pair[1] === "go") e.classList.add("btw-go");
+      if (pair[1] === "back") e.classList.add("btw-go", "btw-back");
+    });
+  }
+  function bubble(cls, html) {
+    var b = h("div", "btw-bubble " + cls, html);
+    els.chat.appendChild(b);
+    requestAnimationFrame(function () { requestAnimationFrame(function () { b.classList.add("btw-in"); }); });
+    els.chat.scrollTop = els.chat.scrollHeight;
+    return b;
+  }
+  function chatBtn(label, onClick) {
+    var btn = h("button", "btw-chatbtn", esc(label));
+    btn.type = "button";
+    btn.addEventListener("click", function () {
+      if (state.busy || !btn.parentNode) return;
+      btn.remove();
+      onClick();
+    });
+    els.chat.appendChild(btn);
+    els.chat.scrollTop = els.chat.scrollHeight;
+  }
+  function typeOut(target, text, done) {
+    var words = text.split(" ");
+    var i = 0;
+    var cursor = h("span", "btw-cursor");
+    target.textContent = "";
+    target.appendChild(cursor);
+    var t = setInterval(function () {
+      if (i >= words.length) {
+        clearInterval(t);
+        cursor.remove();
+        done();
+        return;
+      }
+      cursor.before(document.createTextNode((i ? " " : "") + words[i]));
+      i++;
+      try { target.parentElement.scrollIntoView({ block: "nearest" }); } catch (err) {}
+    }, Math.max(1, 110 * SPEED));
+  }
+
+  function nextCustomer() {
+    state.cust++;
+    state.active = true;
+    var c = CUSTOMERS[state.cust];
+    bubble("btw-cust", esc(c.msg));
+    lit("zone-wrap"); arrows("go", null);
+    renderPara();
+    setCaption("CUSTOMER " + (state.cust + 1) + "/3",
+      state.cust === 0
+        ? "A customer is already waiting. Read what they actually need and set the job description. Or send it bare and see what happens."
+        : "New message just hit your wrapper. Read what they actually need, set the job description, then send it to the LLM.");
+    els.ship.disabled = false;
+    setTimeout(function () { arrows(null, null); }, 1200 * SPEED);
+  }
+
+  function ship() {
+    if (state.busy || !state.active) return;
+    state.busy = true;
+    state.ships++;
+    els.ship.disabled = true;
+    var raw = isRaw();
+    if (raw) state.sawRaw = true;
+    var c = CUSTOMERS[state.cust];
+    var reply = raw ? c.completion : OUT[state.role][state.fmt];
+    var tag = raw ? "no instructions: raw completion" : pick(ROLES, state.role).chip + " · " + pick(FORMATS, state.fmt).chip;
+    var num = "CUSTOMER " + (state.cust + 1) + "/3";
+
+    lit("zone-wrap");
+    els.para.classList.add("btw-flash");
+    setCaption(num, raw
+      ? "You gave it no instructions. The customer's words go in <b>exactly as typed</b>. Nothing stitched, nothing added."
+      : "Your instructions get stitched in front of their message. This is the block the LLM actually receives.");
+
+    setTimeout(function () {
+      els.para.classList.remove("btw-flash");
+      lit("zone-llm"); arrows(null, "go");
+      setCaption(num, raw
+        ? "Raw text in. With no job to do, the function does the only thing it ever does: predict what text comes next…"
+        : "One blob of text goes in. The function predicts the next word, then the next…");
+      var hint = els.llm.querySelector(".btw-emptyhint");
+      if (hint) hint.remove();
+      Array.prototype.forEach.call(els.llm.querySelectorAll(".btw-io"), function (n) { n.remove(); });
+      var io = h("div", "btw-io");
+      io.appendChild(h("div", "btw-iolabel", "IN: text"));
+      io.appendChild(h("div", "btw-iobody", esc(bundlePlain(c.msg))));
+      var out = h("div", "btw-io");
+      out.appendChild(h("div", "btw-iolabel", raw ? "OUT: it just keeps the text going" : "OUT: predicted word by word"));
+      out.appendChild(h("div", "btw-iobody"));
+      els.llm.appendChild(io); els.llm.appendChild(out);
+      requestAnimationFrame(function () { requestAnimationFrame(function () { io.classList.add("btw-in"); out.classList.add("btw-in"); }); });
+
+      setTimeout(function () {
+        arrows(null, null);
+        typeOut(out.lastChild, reply, function () {
+          lit("zone-app"); arrows("back", "back");
+          bubble("btw-prod", '<span class="btw-btag">' + esc(tag) + '</span>\n' + esc(reply));
+          setTimeout(function () {
+            arrows(null, null);
+            react(c, num, raw);
+          }, 900 * SPEED);
+        });
+      }, 700 * SPEED);
+    }, 1100 * SPEED);
+  }
+
+  function react(c, num, raw) {
+    var roleOK = state.role === c.target.role;
+    var fmtOK = state.fmt === c.target.fmt;
+
+    if (roleOK && fmtOK) {
+      bubble("btw-cust btw-glad", "✓ " + esc(c.ok));
+      state.active = false;
+      lit(null);
+      state.busy = false;
+      renderPara();
+      if (state.cust < CUSTOMERS.length - 1) {
+        setCaption("SOLVED", "Satisfied customer. Notice what you just did: you turned a fuzzy request into explicit instructions.");
+        chatBtn("▶ next customer", nextCustomer);
+      } else {
+        setCaption("ALL 3 SOLVED", "Three customers, three different apps, one function. It took you " + state.ships + " sends.");
+        els.note.hidden = false;
+        els.note.innerHTML = "<b>The takeaway:</b> you just did the real job. Every customer sent a fuzzy, human request, and your work was translating it into explicit instructions (a role, a format, a constraint), then adjusting when the first try missed. That's what \"prompt engineering\" actually is. And notice: the function never changed. Every app you built was just different green text."
+          + (state.sawRaw ? " <i>(And that bare send with no instructions? That was the naked function: pure next-word prediction, finishing the customer's own message. Every wrapper ever built exists to point that one trick at a job.)</i>" : "")
+          + " Next, you'll write a real job description of your own: no chips, your words.";
+        try { els.note.scrollIntoView({ behavior: "smooth", block: "nearest" }); } catch (err) {}
+      }
+    } else if (raw) {
+      bubble("btw-cust btw-mad", esc(c.rawComplaint));
+      lit("zone-wrap");
+      state.busy = false;
+      els.ship.disabled = false;
+      setCaption("SEE THAT?", "It didn't answer. It <b>continued</b> their text, because that's all the function ever does. Instructions are what turn a text-continuer into an assistant. Give it a job and send it again.");
+    } else {
+      var complaint = !roleOK ? c.roleComplaints[state.role] : c.fmtComplaints[state.fmt];
+      bubble("btw-cust btw-mad", esc(complaint));
+      lit("zone-wrap");
+      state.busy = false;
+      els.ship.disabled = false;
+      setCaption("TRY AGAIN", esc(c.hint) + " Adjust the dials and send it again.");
+    }
+  }
+
+  function reset() {
+    state = { cust: -1, role: "none", fmt: "none", busy: false, active: false, ships: 0, sawRaw: false };
+    build();
+    start();
+  }
+
+  function start() {
+    els.note.hidden = true;
+    nextCustomer();
+  }
+
+  build();
+  start();
+})();
+</script>
