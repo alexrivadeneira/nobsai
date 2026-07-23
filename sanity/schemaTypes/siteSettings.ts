@@ -5,6 +5,16 @@ export const siteSettings = defineType({
   title: "Site Settings",
   type: "document",
   fields: [
+    defineField({
+      name: "bannerEnabled",
+      title: "Show Announcement Banner",
+      type: "boolean",
+      description: "Turn on to show the banner at the very top of every page",
+      initialValue: false,
+    }),
+    defineField({ name: "bannerText", title: "Banner Text", type: "string" }),
+    defineField({ name: "bannerLinkLabel", title: "Banner Link Label", type: "string", description: "Optional, e.g. 'Sign up →'" }),
+    defineField({ name: "bannerLinkUrl", title: "Banner Link URL", type: "string" }),
     defineField({ name: "aboutTitle", title: "About Title", type: "string" }),
     defineField({ name: "aboutBody", title: "About Bio", type: "text", rows: 4 }),
     defineField({ name: "aboutImage", title: "About Photo", type: "image", options: { hotspot: true } }),

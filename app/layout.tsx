@@ -6,6 +6,7 @@ import SurveyBar from "@/components/SurveyBar";
 import AnalyticsClient from "@/components/AnalyticsClient";
 import Script from "next/script";
 import Link from "next/link";
+import { client } from "@/sanity/lib/client";
 
 const fraunces = Fraunces({
   variable: "--font-fraunces",
@@ -37,14 +38,56 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+type Banner = {
+  bannerEnabled?: boolean;
+  bannerText?: string | null;
+  bannerLinkLabel?: string | null;
+  bannerLinkUrl?: string | null;
+};
+
+async function getBanner(): Promise<Banner | null> {
+  try {
+    return await client.fetch(
+      `*[_type == "siteSettings"][0]{ bannerEnabled, bannerText, bannerLinkLabel, bannerLinkUrl }`,
+      {},
+      { next: { revalidate: 60 } }
+    );
+  } catch {
+    return null;
+  }
+}
+
+function AnnouncementBanner({ banner }: { banner: Banner | null }) {
+  if (!banner?.bannerEnabled || !banner.bannerText) return null;
+  return (
+    <div
+      className="px-4 py-2.5 text-center text-sm font-semibold"
+      style={{ background: "#1a1a1a", color: "#f5f0e8" }}
+    >
+      {banner.bannerText}
+      {banner.bannerLinkLabel && banner.bannerLinkUrl && (
+        <Link
+          href={banner.bannerLinkUrl}
+          className="ml-2 underline"
+          style={{ color: "#e8a33d", textUnderlineOffset: "3px" }}
+        >
+          {banner.bannerLinkLabel}
+        </Link>
+      )}
+    </div>
+  );
+}
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const banner = await getBanner();
   return (
     <html lang="en" className={`${fraunces.variable} ${inter.variable}`}>
       <body className="min-h-screen flex flex-col" style={{ background: "#f5f0e8", fontFamily: "var(--font-inter)" }}>
+        <AnnouncementBanner banner={banner} />
         <Nav />
         <main className="flex-1">{children}</main>
         <Footer />
